@@ -1,14 +1,14 @@
+//Game(width,height,renderer,capa)
 var galaga = galaga || {};
+galaga.game=new Phaser.Game(256,512,Phaser.AUTO,null,this,false,false);
 
-var gameOptions={
-    gameWidth:960,
-    gameHeight:540,
-    levelWidth:1280,
-    levelHeight:800,
-    heroSpeed:200
-};
+galaga.game.state.add('main',galaga.gameState);
+galaga.game.state.start('main');
 
-galaga.game = new Phaser.Game(gameOptions.gameWidth,gameOptions.gameHeight,Phaser.AUTO,'gameFrame',this,false,false);
 
-galaga.game.state.add('game',galaga.game);
-galaga.game.state.start('game');
+
+
+
+
+
+    
