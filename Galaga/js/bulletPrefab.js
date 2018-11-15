@@ -17,22 +17,5 @@ galaga.bulletPrefab.prototype.constructor = galaga.bulletPrefab;
 galaga.bulletPrefab.prototype.update = function(){
   
     
-    /*for(var i=0; i<2; i++){*/
-        
-        if(this.level.bulletScope[0].body.position.y <= 0){
-            
-            this.level.bulletScope[0].destroy(); 
-            this.level.bulletScope.length = 0; 
-            console.log(this.level.bulletScope.length);
-            // this.level.bulletScope[1].destroy(); 
-            //this.level.bulletScope.length -= 1; 
-        }
-   // }
-        
-   /*
-     if(this.level.bulletScope[1].body.position.y <= 0){
-        this.level.bulletScope[1].destroy(); 
-        
-        this.level.bulletScope.length = 0; 
-    }*/
-}
+};
+   

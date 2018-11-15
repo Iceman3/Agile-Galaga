@@ -12,6 +12,8 @@ galaga.gameState = {
         this.load.spritesheet('enemyYellow','assets/img/spr_enemyYellow.png', 14, 12);
         this.load.spritesheet('nave', 'assets/img/spr_player.png', 22, 24);
         this.load.image('insignia1', 'assets/img/spr_insignia_1.png' );
+        
+        this.load.spritesheet('enemy_explosion', 'assets/img/spr_enemy_explosion.png',32,32);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.bulletSpeed = -500; 
         this.speed = 2;
@@ -22,7 +24,7 @@ galaga.gameState = {
         this.lifes = 3;
         
         this.isPaused = false; 
-        this.bulletScope = [];
+       
         
     },
     
@@ -154,15 +156,15 @@ galaga.gameState = {
     
     createBullet:function(){
         
-            if(this.bulletScope.length <1){
+            
                 
             this.bullet = new galaga.bulletPrefab(this.game, this.nave.x, this.nave.top,this);
             this.bullet.enableBody = true;
             this.bullet.body.velocity.y = this.bulletSpeed;
-            this.bulletScope.push(this.game.add.existing(this.bullet));  
+            this.game.add.existing(this.bullet);  
                 
                // this.bulletScope[0].body.velocity.y = this.bulletSpeed;
-            } 
+            
        
         
     },
@@ -229,7 +231,7 @@ galaga.gameState = {
             }
         }
         
-        if(this.space.isDown)
+        if(this.space.isDown && this.space.downDuration(1))
             {
                 this.createBullet();
             

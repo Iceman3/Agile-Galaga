@@ -3,7 +3,7 @@ var galaga = galaga || {};
 
 galaga.yellowEnemyPrefab = function(game,x,y,level){
     Phaser.Sprite.call(this,game,x,y,'enemyYellow');
-    this.anchor.setTo(1);
+    this.anchor.setTo(.5);
     this.animations.add('fly',[0,1],2,true);
     this.animations.play('fly');
    // this.checkWorldBounds = true;
@@ -18,3 +18,30 @@ galaga.yellowEnemyPrefab = function(game,x,y,level){
 galaga.yellowEnemyPrefab.prototype = Object.create(Phaser.Sprite.prototype);
 
 galaga.yellowEnemyPrefab.prototype.constructor = galaga.yellowEnemyPrefab;
+
+galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
+{
+    enemy.kill();
+    this.explosion = this.game.add.sprite(enemy.body.x,enemy.body.y,'enemy_explosion');
+    
+    this.explosion.anchor.setTo(.5);
+    this.explosion.animations.add('die', [0,1,2,3,4],30,false);
+    this.explosion.animations.play('die');
+    bullet.kill();
+    this.game.time.events.loop(Phaser.Timer.SECOND/5,this.stopExplosion,this);
+    
+     
+    
+    
+};
+
+galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
+   
+            this.explosion.kill();
+        
+};
+
+galaga.yellowEnemyPrefab.prototype.update = function(){
+    
+    this.game.physics.arcade.collide(this,this.level.bullet,this.hitBullet,null,this);    
+};
