@@ -4,6 +4,7 @@ var galaga = galaga || {};
 var gameOptions={
     gameWidth:256,
     gameHeight:512, 
+    playerLifes:3
     
 };
 

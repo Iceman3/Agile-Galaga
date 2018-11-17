@@ -29,7 +29,7 @@ galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     this.explosion.animations.play('die');
     bullet.kill();
     this.game.time.events.loop(Phaser.Timer.SECOND/5,this.stopExplosion,this);
-    
+    this.level.score +=100;
      
     
     
@@ -42,6 +42,7 @@ galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
 };
 
 galaga.yellowEnemyPrefab.prototype.update = function(){
+   
+    this.game.physics.arcade.collide(this,this.level.bullet,this.hitBullet,null,this);   
     
-    this.game.physics.arcade.collide(this,this.level.bullet,this.hitBullet,null,this);    
 };

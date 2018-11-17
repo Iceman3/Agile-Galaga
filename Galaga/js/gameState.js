@@ -9,19 +9,21 @@ galaga.gameState = {
         
         this.load.image('star', 'assets/img/spr_star.png');
         this.load.image('bullet', 'assets/img/spr_playerBullet.png');
+        this.load.image('enemyBullet', 'assets/img/spr_enemyBullet.png');
         this.load.spritesheet('enemyYellow','assets/img/spr_enemyYellow.png', 14, 12);
         this.load.spritesheet('nave', 'assets/img/spr_player.png', 22, 24);
         this.load.image('insignia1', 'assets/img/spr_insignia_1.png' );
         
         this.load.spritesheet('enemy_explosion', 'assets/img/spr_enemy_explosion.png',32,32);
+        this.load.spritesheet('player_explosion', 'assets/img/spr_player_explosion.png',32,32);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.bulletSpeed = -500; 
+        this.enemyBulletSpeed = 100; 
         this.speed = 2;
-        
         this.score=0;
         this.highScore= 20000;
         this.numberStage=1;
-        this.lifes = 3;
+      
         
         this.isPaused = false; 
        
@@ -31,55 +33,137 @@ galaga.gameState = {
     create:function(){
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;    
         
+        this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this,this.lifes);
+
        
-       
+        
         this.initStars();
         this.initHud(); 
-        this.initYellowEnemies();
-        
-        this.nave = this.game.add.sprite(this.game.world.centerX,this.game.world.height - 50,'nave');
-      
-        
-        this.nave.anchor.setTo(.5);
+
         this.cursores = this.input.keyboard.createCursorKeys();
-        
-        
-       
-        
+                
       
-        this.game.physics.arcade.enable(this.nave);
-        this.nave.body.collideWorldBounds = true;
         
         this.pKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-        this.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);   
+        this.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.rKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
         
         
-       // this.loadEnemyMedium();
-        
+      
       
     },
     
+    initGrid:function(){
+        this.EnemiesGrid = [
+            'xxxGGGGxxx',
+            'RRRRRRRRRR',
+            'RRRRRRRRRR',
+            'YYYYYYYYYY',
+            'YYYYYYYYYY',            
+        ];
+            
+ 
+
+        
+        
+        for(var i=0; i<this.EnemiesGrid.length;i++)
+            {
+                for(var j=0; j<this.EnemiesGrid[i].length;j++)
+                    {
+                        switch(this.EnemiesGrid[i][j])
+                            {
+                                case 'Y':
+                                   this.yellowEnemyPref = new galaga.yellowEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
+                                   this.yellowEnemyPref.enableBody = true;
+                                   this.vel = 20 * this.numberStage;
+                                   this.game.add.existing(this.yellowEnemyPref);
+                                   this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
+                            
+                                    break;
+                                case 'R':
+                                    break;
+                                case 'G':
+                                    break;
+                                case 'x':
+                                    break;
+                            }
+                    }
+            }
+            
+    },
+    
     initHud:function(){
-        this.stageOffset = 10;
-        for(var i=1; i<=this.numberStage;i++){
-        this.insigniaStage = this.game.add.sprite(gameOptions.gameWidth - (i*this.stageOffset), gameOptions.gameHeight - 20,'insignia1');
-        }
         
-        this.lifesOffset = 24;
-        for(var i=1; i<this.lifes;i++){
-        this.insigniaStage = this.game.add.sprite(i*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
-        }
         
+        this.infoStyle = { font: "15px arcade", fill: "#0000FF",};
         this.topStyle = { font: "15px arcade", fill: "#FF0000",};
         this.scoreStyle = { font: "15px arcade", fill: "#FFFFFF", align: "center",};
         this.playerText = this.game.add.text(0,0, "1UP", this.topStyle); 
         this.playerScore = this.game.add.text(15,15, this.score, this.scoreStyle); 
         
         this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGHSCORE", this.topStyle); 
-        this.playerScore = this.game.add.text(gameOptions.gameWidth/2,15, this.highScore, this.scoreStyle); 
+        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2,15, this.highScore, this.scoreStyle); 
         
+        this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
+
+        this.game.time.events.add(Phaser.Timer.SECOND*3,this.changeInfo,this);
         
 
+    },
+    
+    changeInfo:function()
+    {
+        this.playerinfoStarts.destroy();
+        this.game.time.events.add(Phaser.Timer.SECOND*2,this.stageInfo,this);
+    },
+    
+    stageInfo:function(){
+         this.stageinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "STAGE " + this.numberStage, this.infoStyle); 
+         this.game.time.events.add(Phaser.Timer.SECOND*2,this.initGame,this);
+    },
+    
+    initGame:function(){
+        this.stageinfoStarts.destroy();
+        this.stageOffset = 10;
+        for(var i=1; i<=this.numberStage;i++){
+        this.insigniaStage = this.game.add.sprite(gameOptions.gameWidth - (i*this.stageOffset), gameOptions.gameHeight - 20,'insignia1');
+        }
+        
+        this.lifesOffset = 24;
+        
+       
+       // for(var i=1; i<gameOptions.playerLifes;i++){
+        if(gameOptions.playerLifes >= 3)
+            {
+                this.playerlife1= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
+            }
+        if(gameOptions.playerLifes >= 2)
+            {
+                this.playerlife2= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
+            }
+        
+       // this.initYellowEnemies();                      
+ 
+        
+        this.nave.enableBody = true; 
+        this.game.add.existing(this.nave);
+        
+        this.game.physics.arcade.enable(this.nave);
+        this.nave.body.collideWorldBounds = true;
+        
+        
+        this.initGrid();
+        
+    },
+    
+    updateHUD: function(){
+        this.playerScore.setText(this.score); 
+        if(this.score > this.highScore)
+            {
+                this.playerHighScore.setText(this.score);
+            }
+        
+        
     },
     
     initStars:function(){
@@ -146,81 +230,102 @@ galaga.gameState = {
               
          }
    },
-    
-   /* loadBullets:function(){
-        this.bullets = this.add.group();
-        this.bullets.enableBody = true;
-        this.shootingTimer = this.game.time.events.loop(Phaser.Timer.SECOND/5,this.createBullet,this);
+     
+    restartPlayer:function()
+    {
+       
         
-    },*/
-    
+        if(gameOptions.playerLifes==3){
+        this.playerlife2.destroy();
+        }
+        else if(gameOptions.playerLifes == 2)
+        {
+                this.playerlife1.destroy();
+        }
+        gameOptions.playerLifes --;
+        
+        if(gameOptions.playerLifes != 0)
+            {
+                this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this,this.lifes);
+                this.nave.enableBody = true; 
+                this.game.add.existing(this.nave);
+            
+            }
+        else{
+                   
+                    this.endGameText = this.game.add.text(gameOptions.gameWidth/2 - 40,gameOptions.gameHeight/2, "GAME OVER", this.infoStyle); 
+        }
+        
+        console.log(gameOptions.playerLifes);
+        
+
+    },
     createBullet:function(){
         
             
                 
-            this.bullet = new galaga.bulletPrefab(this.game, this.nave.x, this.nave.top,this);
+            this.bullet = new galaga.bulletPrefab(this.game, this.nave.body.x+12, this.nave.top,this);
             this.bullet.enableBody = true;
             this.bullet.body.velocity.y = this.bulletSpeed;
             this.game.add.existing(this.bullet);  
                 
-               // this.bulletScope[0].body.velocity.y = this.bulletSpeed;
-            
-       
         
     },
-    
-      loadEnemyMedium:function(){
-        this.enemyMediums = this.add.group();
-        this.enemyMediums.enableBody = true;
-        this.spawnTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2,this.createEnemyMedium,this);
-        
-    },
+     
     
      initYellowEnemies:function(){
+          
+         var xOffset = 20;
          
-        this.yellowEnemies = [];
-          this.yellowEnemyPref = new galaga.yellowEnemyPrefab(this.game,100,200,this);
+         for(var i=0; i<5;i++)
+             {
+          this.yellowEnemyPref = new galaga.yellowEnemyPrefab(this.game,70 + (xOffset*i),200,this);
             
             this.yellowEnemyPref.enableBody = true;
            
-           /* this.yellowEnemies.push(*/this.game.add.existing(this.yellowEnemyPref);//);  
+           this.game.add.existing(this.yellowEnemyPref);  
+             }
+         this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
          
              
     },
     
-     /*checkPlayerBulletsBounds:function(){
-        for(var i=0; i<=this.bulletScope.length; i++)
-        {
+    enemyShoot:function(){ 
+        this.xOffset = 8;
+        this.yOffset = 15;
+        
+        
+ 
+       this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.yellowEnemyPref.body.x+this.xOffset,this.yellowEnemyPref.body.y+this.yOffset,this);
+       this.enemyBullet.enableBody = true;
+       this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
+       this.game.add.existing(this.enemyBullet);  
             
-            //console.log(this.bulletScope[0].position);
-                
-        }
-    },*/
+    },
+    
+     
     
     update:function(){
         
        
-       
+       this.updateHUD();
          
         
-         if(this.cursores.right.isDown){
-            this.nave.animations.play('right');
-             this.nave.body.velocity.x += this.speed;
+        if(this.cursores.right.isDown){
+              this.nave.body.velocity.x += this.speed;
         }else
         
         if(this.cursores.left.isDown){
-            this.nave.animations.play('left');
-             this.nave.body.velocity.x -= this.speed;
+              this.nave.body.velocity.x -= this.speed;
         }else{
-            this.nave.animations.play('stand');
-            
+             
              this.nave.body.velocity.x =0;
         }
         
         if(this.pKey.isDown){ 
             if(!this.isPaused)
             {
-                this.pauseText = this.game.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
+                this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
 
                 this.game.paused = true; 
                 
@@ -230,6 +335,10 @@ galaga.gameState = {
                 this.game.paused = false;
             }
         }
+        if(this.rKey.isDown)
+            {
+                galaga.game.state.start('main');
+            }
         
         if(this.space.isDown && this.space.downDuration(1))
             {
