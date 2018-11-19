@@ -16,6 +16,6 @@ galaga.enemyBulletPrefab.prototype.constructor = galaga.enemyBulletPrefab;
  
 galaga.enemyBulletPrefab.prototype.update = function(){
   
-    
+    //this.body.y++;
 };
    

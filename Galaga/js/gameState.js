@@ -62,9 +62,8 @@ galaga.gameState = {
             'YYYYYYYYYY',            
         ];
             
- 
-
-        
+          this.yellowEnemies = [];
+         this.enemyBullets = this.add.group();
         
         for(var i=0; i<this.EnemiesGrid.length;i++)
             {
@@ -73,11 +72,11 @@ galaga.gameState = {
                         switch(this.EnemiesGrid[i][j])
                             {
                                 case 'Y':
-                                   this.yellowEnemyPref = new galaga.yellowEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
-                                   this.yellowEnemyPref.enableBody = true;
-                                   this.vel = 20 * this.numberStage;
-                                   this.game.add.existing(this.yellowEnemyPref);
-                                   this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
+                                   this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
+                                    this.yellowEnemy.anchor.setTo(.5);
+                                    this.yellowEnemy.enableBody = true;
+                                   this.yellowEnemy.vel = 20 * this.numberStage;
+                                   this.yellowEnemies.push(this.game.add.existing(this.yellowEnemy));
                             
                                     break;
                                 case 'R':
@@ -89,6 +88,9 @@ galaga.gameState = {
                             }
                     }
             }
+
+          this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*1 ,this.enemyShoot,this);
+
             
     },
     
@@ -106,7 +108,7 @@ galaga.gameState = {
         
         this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
 
-        this.game.time.events.add(Phaser.Timer.SECOND*3,this.changeInfo,this);
+        this.game.time.events.add(Phaser.Timer.SECOND,this.changeInfo,this);
         
 
     },
@@ -119,7 +121,7 @@ galaga.gameState = {
     
     stageInfo:function(){
          this.stageinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "STAGE " + this.numberStage, this.infoStyle); 
-         this.game.time.events.add(Phaser.Timer.SECOND*2,this.initGame,this);
+         this.game.time.events.add(Phaser.Timer.SECOND,this.initGame,this);
     },
     
     initGame:function(){
@@ -279,33 +281,25 @@ galaga.gameState = {
     },
      
     
-     initYellowEnemies:function(){
-          
-         var xOffset = 20;
-         
-         for(var i=0; i<5;i++)
-             {
-          this.yellowEnemyPref = new galaga.yellowEnemyPrefab(this.game,70 + (xOffset*i),200,this);
-            
-            this.yellowEnemyPref.enableBody = true;
-           
-           this.game.add.existing(this.yellowEnemyPref);  
-             }
-         this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
-         
-             
-    },
+    
     
     enemyShoot:function(){ 
-        this.xOffset = 8;
-        this.yOffset = 15;
+
         
+        if(this.yellowEnemies.length !=0)
+            {
+                
+            var rndIndex = Math.floor(Math.random() * this.yellowEnemies.length);
+
+            this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.yellowEnemies[rndIndex].body.x+6,this.yellowEnemies[rndIndex].body.y+8,this);
+            this.enemyBullet.enableBody = true;
+            this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
+            this.enemyBullets.add(this.enemyBullet);  
+
+            }
+
+
         
- 
-       this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.yellowEnemyPref.body.x+this.xOffset,this.yellowEnemyPref.body.y+this.yOffset,this);
-       this.enemyBullet.enableBody = true;
-       this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
-       this.game.add.existing(this.enemyBullet);  
             
     },
     
@@ -313,16 +307,18 @@ galaga.gameState = {
     
     update:function(){
         
+        
+        // this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
        
        this.updateHUD();
          
         
         if(this.cursores.right.isDown){
-              this.nave.body.velocity.x += this.speed;
+              this.nave.body.x += this.speed;
         }else
         
         if(this.cursores.left.isDown){
-              this.nave.body.velocity.x -= this.speed;
+              this.nave.body.x -= this.speed;
         }else{
              
              this.nave.body.velocity.x =0;
