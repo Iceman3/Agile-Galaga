@@ -23,7 +23,7 @@ galaga.gameState = {
         this.score=0;
         this.highScore= 20000;
         this.numberStage=1;
-      
+        this.gameStarted = false;
         
         this.isPaused = false; 
        
@@ -34,8 +34,14 @@ galaga.gameState = {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;    
         
         this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this,this.lifes);
-
+        this.time = 0;
        
+        
+        //Puntos para Movimiento de Enemigos
+        this.rightSpawnPoint = new Phaser.Point(gameOptions.gameWidth +20, gameOptions.gameHeight * 0.7);
+        this.centerPoint = new Phaser.Point(gameOptions.gameWidth/2, gameOptions.gameHeight/2);
+        
+        
         
         this.initStars();
         this.initHud(); 
@@ -73,8 +79,13 @@ galaga.gameState = {
                             {
                                 case 'Y':
                                    this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
-                                    this.yellowEnemy.anchor.setTo(.5);
-                                    this.yellowEnemy.enableBody = true;
+                                    
+                                    this.yellowEnemy.path.push(this.rightSpawnPoint);
+                                    this.yellowEnemy.path.push(this.centerPoint);
+                                    this.yellowEnemy.path.push(this.yellowEnemy.startPosition);
+                                    
+                                   this.yellowEnemy.anchor.setTo(.5);
+                                   this.yellowEnemy.enableBody = true;
                                    this.yellowEnemy.vel = 20 * this.numberStage;
                                    this.yellowEnemies.push(this.game.add.existing(this.yellowEnemy));
                             
@@ -89,8 +100,8 @@ galaga.gameState = {
                     }
             }
 
-          this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*1 ,this.enemyShoot,this);
-
+          this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
+         this.gameStarted = true;
             
     },
     
@@ -308,10 +319,54 @@ galaga.gameState = {
     update:function(){
         
         
-        // this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*5 ,this.enemyShoot,this);
        
        this.updateHUD();
-         
+         if(this.gameStarted){
+            
+             /*  for(var i=0; i< this.yellowEnemies.length;i++)
+                 {
+                    if(this.yellowEnemies[i].currentPath < this.yellowEnemies[i].path.length-1)
+                    {
+             
+                     
+                         var firstPoint = this.yellowEnemies[i].path[this.yellowEnemies[i].currentPath];
+                         var secondPoint = this.yellowEnemies[i].path[this.yellowEnemies[i].currentPath+1];
+                        console.log(firstPoint);
+                        console.log(secondPoint);
+
+                         var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(this.yellowEnemies[i].interpolate));
+
+                         this.yellowEnemies[i].body.x = point.x;
+                         this.yellowEnemies[i].body.y = point.y;
+
+                         this.yellowEnemies[i].interpolate += 0.01;
+                         if(this.yellowEnemies[i].interpolate >1)
+                             {
+                                 this.yellowEnemies[i].interpolate = 0;
+                                 this.yellowEnemies[i].currentPath++;
+                             }
+                        
+                           // console.log("eg");
+                    }
+
+                     
+                 }*/
+             
+             
+             ///Movimineto Separacion
+             
+             for(var i=0; i< this.yellowEnemies.length;i++)
+                 {
+             var point = Phaser.Point.add(this.yellowEnemies[i].startPosition  , Phaser.Point.normalize(Phaser.Point.subtract(this.yellowEnemies[i].startPosition, new Phaser.Point(gameOptions.gameWidth/2,80) )).setMagnitude( Math.abs(Math.sin(this.game.time.totalElapsedSeconds()))*20 ));
+                this.yellowEnemies[i].body.x = point.x;
+                this.yellowEnemies[i].body.y = point.y;
+                 }
+             
+         }
+        
+        
+       
+
         
         if(this.cursores.right.isDown){
               this.nave.body.x += this.speed;
@@ -348,7 +403,7 @@ galaga.gameState = {
             
             }
         
-        
+        this.time++;
     },
     
    

@@ -9,7 +9,10 @@ galaga.yellowEnemyPrefab = function(game,x,y,level){
    // this.checkWorldBounds = true;
    // this.outOfBoundsKill = true;
     this.level = level;
-    
+    this.startPosition = new Phaser.Point(x,y);
+    this.path = [];
+    this.interpolate = 0;
+    this.currentPath = 0;
     
     this.game.physics.arcade.enable(this);
     
@@ -24,7 +27,7 @@ galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     this.level.yellowEnemies.splice(this.level.yellowEnemies.indexOf(enemy),1);
     enemy.kill();
     bullet.kill();
-    this.explosion = this.game.add.sprite(enemy.body.x,enemy.body.y,'enemy_explosion');
+    this.explosion = this.game.add.sprite(enemy.body.x+8,enemy.body.y+8,'enemy_explosion');
     
     this.explosion.anchor.setTo(0.5);
     this.explosion.animations.add('die', [0,1,2,3,4],30,false);
