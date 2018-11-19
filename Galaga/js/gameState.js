@@ -49,7 +49,7 @@ galaga.gameState = {
         this.rKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
         
         
-      
+         this.bullets = this.add.group();
       
     },
     
@@ -264,10 +264,16 @@ galaga.gameState = {
         
             
                 
-            this.bullet = new galaga.bulletPrefab(this.game, this.nave.body.x+12, this.nave.top,this);
-            this.bullet.enableBody = true;
-            this.bullet.body.velocity.y = this.bulletSpeed;
-            this.game.add.existing(this.bullet);  
+           this.bullet = this.bullets.getFirstExists(false);
+            if(!this.bullet){
+                this.bullet = new galaga.bulletPrefab(this.game, this.nave.body.x+12, this.nave.top,this);
+                this.bullet.enableBody = true;
+                this.bullets.add(this.bullet);
+            }
+            else{
+                this.bullet.reset(this.nave.body.x+12, this.nave.top);
+            }    
+                this.bullet.body.velocity.y = this.bulletSpeed;
                 
         
     },

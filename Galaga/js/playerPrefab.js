@@ -19,12 +19,13 @@ galaga.playerPrefab.prototype.hitBullet = function(player,bullet)
      console.log("gegw");
     //player.kill();
     player.kill();
+     bullet.kill();
     this.explosion = this.game.add.sprite(player.body.x,player.body.y,'player_explosion');
     
     //this.explosion.anchor.setTo(.5);
     this.explosion.animations.add('die', [0,1,2,3],5,false);
     this.explosion.animations.play('die');
-    bullet.kill();
+   
 
   // this.game.time.events.loop(Phaser.Timer.SECOND*1,this.stopExplosion,this);
     this.game.time.events.add(Phaser.Timer.SECOND*1,this.stopExplosion,this);
