@@ -1,13 +1,13 @@
 var galaga = galaga || {};
 
 
-galaga.yellowEnemyPrefab = function(game,x,y,level){
-    Phaser.Sprite.call(this,game,x,y,'enemyYellow');
+galaga.redEnemyPrefab = function(game,x,y,level){
+    Phaser.Sprite.call(this,game,x,y,/*'enemyRed'*/'enemyYellow');
     this.anchor.setTo(.5);
     this.animations.add('fly',[0,1],2,true);
     this.animations.play('fly');
-   // this.checkWorldBounds = true;
-   // this.outOfBoundsKill = true;
+    //this.checkWorldBounds = true;
+    //this.outOfBoundsKill = true;
     this.level = level;
     this.startPosition = new Phaser.Point(x,y);
     this.path = [];
@@ -18,11 +18,11 @@ galaga.yellowEnemyPrefab = function(game,x,y,level){
     
 };
 
-galaga.yellowEnemyPrefab.prototype = Object.create(Phaser.Sprite.prototype);
+galaga.redEnemyPrefab.prototype = Object.create(Phaser.Sprite.prototype);
 
-galaga.yellowEnemyPrefab.prototype.constructor = galaga.yellowEnemyPrefab;
+galaga.redEnemyPrefab.prototype.constructor = galaga.redEnemyPrefab;
 
-galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
+galaga.redEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
 {
     this.level.Enemies.splice(this.level.Enemies.indexOf(enemy),1);
     enemy.kill();
@@ -42,13 +42,13 @@ galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     
 };
 
-galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
+galaga.redEnemyPrefab.prototype.stopExplosion = function(){
    
             this.explosion.kill();
         
 };
 
-galaga.yellowEnemyPrefab.prototype.update = function(){
+galaga.redEnemyPrefab.prototype.update = function(){
    
     
     
