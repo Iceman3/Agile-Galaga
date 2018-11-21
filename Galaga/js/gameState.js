@@ -21,7 +21,7 @@ galaga.gameState = {
         this.enemyBulletSpeed = 100; 
         this.speed = 2;
         this.score=0;
-        this.highScore= 20000;
+        this.highScore= gameOptions.highScore;
         this.numberStage=1;
         this.gameStarted = false;
         
@@ -108,14 +108,14 @@ galaga.gameState = {
     initHud:function(){
         
         
-        this.infoStyle = { font: "15px arcade", fill: "#0000FF",};
-        this.topStyle = { font: "15px arcade", fill: "#FF0000",};
-        this.scoreStyle = { font: "15px arcade", fill: "#FFFFFF", align: "center",};
-        this.playerText = this.game.add.text(0,0, "1UP", this.topStyle); 
-        this.playerScore = this.game.add.text(15,15, this.score, this.scoreStyle); 
+        this.infoStyle = { font: "15px galaga", fill: "#00FFFF",};
+        this.topStyle = { font: "15px galaga", fill: "#FF0000",};
+        this.scoreStyle = { font: "15px galaga", fill: "#FFFFFF", align: "center",};
+        this.playerText = this.game.add.text(20,0, "1UP", this.topStyle); 
+        this.playerScore = this.game.add.text(40,15, this.score, this.scoreStyle); 
         
-        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGHSCORE", this.topStyle); 
-        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2,15, this.highScore, this.scoreStyle); 
+        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGH SCORE", this.topStyle); 
+        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-15,15, this.highScore, this.scoreStyle); 
         
         this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
 
