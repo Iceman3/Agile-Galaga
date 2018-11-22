@@ -32,26 +32,18 @@ galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     this.explosion.anchor.setTo(0.5);
     this.explosion.animations.add('die', [0,1,2,3,4],30,false);
     this.explosion.animations.play('die');
-    
-
 
     this.game.time.events.add(Phaser.Timer.SECOND/5,this.stopExplosion,this);
     this.level.score +=100;
-     
     
-    
+    this.level.sndEnemyHit.play();
+    this.level.sndEnemy2Death.play();
 };
 
 galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
-   
-            this.explosion.kill();
-        
+    this.explosion.kill();
 };
 
 galaga.yellowEnemyPrefab.prototype.update = function(){
-   
-    
-    
     this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);   
-    
 };
