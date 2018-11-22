@@ -8,7 +8,7 @@ galaga.mainMenu = {
         this.stage.backgroundColor = "#000000";
         this.load.image('star', 'assets/img/spr_star.png');
         this.load.spritesheet('nave', 'assets/img/spr_player.png', 22, 24);
-
+        this.game.load.audio('sndStart', 'assets/sounds/snd_start.wav');
     },
     
     
@@ -18,8 +18,8 @@ galaga.mainMenu = {
         this.initHud(); 
         
         this.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
+        
+        this.sndStart = this.game.add.audio('sndStart');
     },
     
         initStars:function(){
@@ -119,11 +119,15 @@ galaga.mainMenu = {
 
     },
     
-        
+    startGame:function(){
+        galaga.game.state.start('main');
+    },
+    
     update:function(){
         if(this.space.isDown)
-            {
-                galaga.game.state.start('main');
-            }
-    },
+        {
+            this.sndStart.play();
+            this.game.time.events.add(Phaser.Timer.SECOND * 2, this.startGame, this);
+        }
+    }
 }

@@ -18,14 +18,12 @@ galaga.gameState = {
         this.load.spritesheet('enemy_explosion', 'assets/img/spr_enemy_explosion.png',32,32);
         this.load.spritesheet('player_explosion', 'assets/img/spr_player_explosion.png',32,32);
         
-        this.game.load.audio('sndBeginning', 'assets/sounds/beginning.wav');
-        this.game.load.audio('sndEnd', 'assets/sounds/end.wav');
+        this.game.load.audio('sndStageIntro', 'assets/sounds/stage_intro.wav');
         this.game.load.audio('sndEnemyShoot', 'assets/sounds/snd_enemy_shoot.wav');
         this.game.load.audio('sndEnemyHit', 'assets/sounds/snd_enemy_hit.wav');
         this.game.load.audio('sndEnemy1Death', 'assets/sounds/snd_enemy1_death.wav');
         this.game.load.audio('sndEnemy2Death', 'assets/sounds/snd_enemy2_death.wav');
-        this.game.load.audio('sndShoot', 'assets/sounds/snd_shoot.wav');
-        this.game.load.audio('sndShipHit', 'assets/sounds/snd_ship_hit.wav');
+        this.game.load.audio('sndPlayerShoot', 'assets/sounds/snd_player_shoot.wav');
         this.game.load.audio('sndPlayerDeath', 'assets/sounds/snd_player_death.wav');
         
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -39,32 +37,31 @@ galaga.gameState = {
         
         this.gameStarted = false;
         this.isPaused = false;
+        
+        this.playerLifes = gameOptions.playerLifes;
     },
     
     create:function(){
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;    
         
-        this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this,this.lifes);
+        this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this);
         this.time = 0;
        
         //Puntos para Movimiento de Enemigos
         this.rightSpawnPoint = new Phaser.Point(gameOptions.gameWidth +20, gameOptions.gameHeight * 0.7);
         this.centerPoint = new Phaser.Point(gameOptions.gameWidth/2, gameOptions.gameHeight/2);
         
-        this.sndBeginning = this.game.add.audio('sndBeginning');
-        this.sndEnd = this.game.add.audio('sndEnd');
+        this.sndStageIntro = this.game.add.audio('sndStageIntro');
         this.sndEnemyShoot = this.game.add.audio('sndEnemyShoot');
         this.sndEnemyHit = this.game.add.audio('sndEnemyHit');
         this.sndEnemy1Death = this.game.add.audio('sndEnemy1Death');
         this.sndEnemy2Death = this.game.add.audio('sndEnemy2Death');
-        this.sndShoot = this.game.add.audio('sndShoot');
-        this.sndShipHit = this.game.add.audio('sndShipHit');
+        this.sndPlayerShoot = this.game.add.audio('sndPlayerShoot');
         this.sndPlayerDeath = this.game.add.audio('sndPlayerDeath');
         
         this.initStars();
+        this.sndStageIntro.play();
         this.initHud();
-        
-        this.sndBeginning.play();
 
         this.cursores = this.input.keyboard.createCursorKeys();
         this.pKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
@@ -147,17 +144,17 @@ galaga.gameState = {
         
         this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
 
-        this.game.time.events.add(Phaser.Timer.SECOND,this.changeInfo,this);
+        this.game.time.events.add(Phaser.Timer.SECOND, this.changeInfo, this);
     },
     
     changeInfo:function(){
         this.playerinfoStarts.destroy();
-        this.game.time.events.add(Phaser.Timer.SECOND*2,this.stageInfo,this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 2, this.stageInfo,this);
     },
     
     stageInfo:function(){
          this.stageinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "STAGE " + this.numberStage, this.infoStyle); 
-         this.game.time.events.add(Phaser.Timer.SECOND,this.initGame,this);
+         this.game.time.events.add(Phaser.Timer.SECOND * 3.75, this.initGame, this);
     },
     
     initGame:function(){
@@ -170,11 +167,11 @@ galaga.gameState = {
         
         this.lifesOffset = 24;       
        // for(var i=1; i<gameOptions.playerLifes;i++){
-        if(gameOptions.playerLifes >= 3)
+        if(this.playerLifes >= 3)
         {
             this.playerlife1= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
-        if(gameOptions.playerLifes >= 2)
+        if(this.playerLifes >= 2)
         {
             this.playerlife2= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
@@ -249,23 +246,21 @@ galaga.gameState = {
      
     restartPlayer:function()
     {
-        if(gameOptions.playerLifes==3){
+        if(this.playerLifes==3){
             this.playerlife2.destroy();
         }
-        else if(gameOptions.playerLifes == 2){
+        else if(this.playerLifes == 2){
             this.playerlife1.destroy();
         }
         
-        gameOptions.playerLifes --;
-        if(gameOptions.playerLifes != 0){
-            this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this,this.lifes);
+        this.playerLifes--;
+        if(this.playerLifes != 0){
+            this.nave = new galaga.playerPrefab(this.game,this.game.world.centerX,this.game.world.height - 50,this);
             this.nave.canShoot = true;
             this.game.add.existing(this.nave);
         }
         else{
             this.endGameText = this.game.add.text(gameOptions.gameWidth/2 - 40,gameOptions.gameHeight/2, "GAME OVER", this.infoStyle);
-            this.sndEnd.startTime = 1.5;
-            this.sndEnd.play();
         }
     },
     
@@ -281,7 +276,7 @@ galaga.gameState = {
         }    
         
         this.bullet.body.velocity.y = this.bulletSpeed;
-        this.sndShoot.play();
+        this.sndPlayerShoot.play();
     },
     
     enemyShoot:function(){ 
@@ -333,18 +328,18 @@ galaga.gameState = {
              
              ///Movimineto Separacion
              
-             for(var i=0; i< this.Enemies.length;i++)
+             for(var i = 0; i < this.Enemies.length; i++)
              {
-                 var point = Phaser.Point.add(this.Enemies[i].startPosition  , Phaser.Point.normalize(Phaser.Point.subtract(this.Enemies[i].startPosition, new Phaser.Point(gameOptions.gameWidth/2,80) )).setMagnitude(            Math.abs(Math.sin(this.game.time.totalElapsedSeconds()))*20 ));
+                 var point = Phaser.Point.add(this.Enemies[i].startPosition, Phaser.Point.normalize(Phaser.Point.subtract(
+                             this.Enemies[i].startPosition, new Phaser.Point(gameOptions.gameWidth/2,80))).setMagnitude(
+                             Math.abs(Math.sin(this.game.time.totalElapsedSeconds()))*20));
+                 
                  this.Enemies[i].body.x = point.x;
                  this.Enemies[i].body.y = point.y;
              }
              
          }
         
-        
-       
-
         
         if(this.cursores.right.isDown){
               this.nave.body.x += this.speed;

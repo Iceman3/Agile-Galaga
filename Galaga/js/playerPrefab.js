@@ -23,7 +23,6 @@ galaga.playerPrefab.prototype.hitBullet = function(player,bullet){
     player.kill();
     bullet.kill();
     
-    this.level.sndShipHit.play();
     this.level.sndPlayerDeath.startTime = 1.5;
     this.level.sndPlayerDeath.play();
     

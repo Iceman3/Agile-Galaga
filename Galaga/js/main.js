@@ -6,18 +6,13 @@ var gameOptions={
     gameHeight:512, 
     playerLifes:3,
     highScore:20000,
-    
 };
 
-galaga.game=new Phaser.Game(gameOptions.gameWidth,gameOptions.gameHeight,Phaser.AUTO,null,this,false,false);
+galaga.game = new Phaser.Game(gameOptions.gameWidth,gameOptions.gameHeight,Phaser.AUTO,null,this,false,false);
 
-galaga.game.state.add('main',galaga.gameState);
+galaga.game.state.add('main', galaga.gameState);
 galaga.game.state.add('mainMenu', galaga.mainMenu);
 galaga.game.state.start('mainMenu');
-
-
-
-
 
 
 
