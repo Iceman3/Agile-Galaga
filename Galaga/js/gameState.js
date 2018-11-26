@@ -12,6 +12,7 @@ galaga.gameState = {
         this.load.image('enemyBullet', 'assets/img/spr_enemyBullet.png');
         this.load.image('insignia1', 'assets/img/spr_insignia_1.png' );
         
+        this.load.spritesheet('enemyGreen','assets/img/spr_enemyGreen.png', 16, 17);
         this.load.spritesheet('enemyYellow','assets/img/spr_enemyYellow.png', 14, 12);
         this.load.spritesheet('enemyRed','assets/img/spr_enemyRed.png', 14, 12);
         this.load.spritesheet('nave', 'assets/img/spr_player.png', 22, 24);
@@ -111,12 +112,20 @@ galaga.gameState = {
 
                         this.redEnemy.enableBody = true;
                         this.redEnemy.vel = 20 * this.numberStage;
-                        this.Enemies.push(this.game.add.existing(this.redEnemy));                                    
+                        this.Enemies.push(this.game.add.existing(this.redEnemy));
 
                         break;
 
                     case 'G':
+                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
 
+                        this.greenEnemy.path.push(this.rightSpawnPoint);
+                        this.greenEnemy.path.push(this.centerPoint);
+                        this.greenEnemy.path.push(this.greenEnemy.startPosition);
+
+                        this.greenEnemy.enableBody = true;
+                        this.greenEnemy.vel = 20 * this.numberStage;
+                        this.Enemies.push(this.game.add.existing(this.greenEnemy));
 
                         break;
 
