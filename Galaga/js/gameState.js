@@ -40,6 +40,20 @@ galaga.gameState = {
         this.isPaused = false;
         
         this.playerLifes = gameOptions.playerLifes;
+        
+        
+        this.initialMovement = true;
+        
+        this.timeToSpawnEnemy = 0.065;
+        this.currTimeToSpawnEnemy = 0.0;
+        this.currIndexEnemyToSpawn = 0;
+        
+        this.numEnemiesPerWave = [8, 8, 8, 10, 10];
+        this.currEnemiesPerWave = 0;
+        this.currIndexEnemiesPerWave = 0;
+        this.nextWave = true;
+        this.timeToSpawnWave = 5.0;
+        this.currTimeToSpawnWave = 0.0;
     },
     
     create:function(){
@@ -91,11 +105,13 @@ galaga.gameState = {
                 switch(this.EnemiesGrid[i][j])
                 {
                     case 'Y':
-                        this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
+                        var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
+                        this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
 
                         this.yellowEnemy.path.push(this.rightSpawnPoint);
                         this.yellowEnemy.path.push(this.centerPoint);
-                        this.yellowEnemy.path.push(this.yellowEnemy.startPosition);
+                        this.yellowEnemy.path.push(finalPoint);
+                        
 
                         this.yellowEnemy.enableBody = true;
                         this.yellowEnemy.vel = 20 * this.numberStage;
@@ -104,11 +120,12 @@ galaga.gameState = {
                         break;
 
                     case 'R':
-                        this.redEnemy = new galaga.redEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
+                        var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
+                        this.redEnemy = new galaga.redEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
 
                         this.redEnemy.path.push(this.rightSpawnPoint);
                         this.redEnemy.path.push(this.centerPoint);
-                        this.redEnemy.path.push(this.redEnemy.startPosition);
+                        this.redEnemy.path.push(finalPoint);
 
                         this.redEnemy.enableBody = true;
                         this.redEnemy.vel = 20 * this.numberStage;
@@ -117,11 +134,12 @@ galaga.gameState = {
                         break;
 
                     case 'G':
-                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,50+(16*j),80+(16*i),this);
+                        var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
+                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
 
                         this.greenEnemy.path.push(this.rightSpawnPoint);
                         this.greenEnemy.path.push(this.centerPoint);
-                        this.greenEnemy.path.push(this.greenEnemy.startPosition);
+                        this.greenEnemy.path.push(finalPoint);
 
                         this.greenEnemy.enableBody = true;
                         this.greenEnemy.vel = 20 * this.numberStage;
@@ -130,7 +148,7 @@ galaga.gameState = {
                         break;
 
                     case 'x':
-
+                        
 
                         break;
                 }
@@ -300,93 +318,110 @@ galaga.gameState = {
         }
     },
     
-    update:function(){
-        
-       this.updateHUD();
-         if(this.gameStarted){
-            
-             /*  for(var i=0; i< this.Enemies.length;i++)
-                 {
-                    if(this.Enemies[i].currentPath < this.Enemies[i].path.length-1)
-                    {
-             
-                     
-                         var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
-                         var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath+1];
-                        console.log(firstPoint);
-                        console.log(secondPoint);
+    updateEnemies:function(){
+        if(this.initialMovement){
+            for(var i = 0; i < this.currIndexEnemyToSpawn; i++){
+                if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
+                    var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
+                    var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
 
-                         var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(this.Enemies[i].interpolate));
+                    var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude() * this.Enemies[i].interpolate));
 
-                         this.Enemies[i].body.x = point.x;
-                         this.Enemies[i].body.y = point.y;
+                    this.Enemies[i].body.x = point.x;
+                    this.Enemies[i].body.y = point.y;
 
-                         this.Enemies[i].interpolate += 0.01;
-                         if(this.Enemies[i].interpolate >1)
-                             {
-                                 this.Enemies[i].interpolate = 0;
-                                 this.Enemies[i].currentPath++;
-                             }
-                        
-                           // console.log("eg");
+                    this.Enemies[i].interpolate += gameOptions.speedEnemies;
+                    if(this.Enemies[i].interpolate >= 1.0){
+                        this.Enemies[i].interpolate = 0.0;
+                        this.Enemies[i].currentPath++;
                     }
+                }
+            }
+            
+            if(this.nextWave){
+                if(this.currTimeToSpawnEnemy >= this.timeToSpawnEnemy){
+                    var i = this.currIndexEnemyToSpawn;
+                    if(i >= this.Enemies.length){
+                        if(this.Enemies[i - 1].currentPath >= this.Enemies[i - 1].path.length - 1){
+                            this.initialMovement = false;
+                        }
+                    }
+                    else{
+                        this.currIndexEnemyToSpawn++;
 
-                     
-                 }*/
-             
-             
-             ///Movimineto Separacion
-             
-             for(var i = 0; i < this.Enemies.length; i++)
-             {
-                 var point = Phaser.Point.add(this.Enemies[i].startPosition, Phaser.Point.normalize(Phaser.Point.subtract(
-                             this.Enemies[i].startPosition, new Phaser.Point(gameOptions.gameWidth/2,80))).setMagnitude(
-                             Math.abs(Math.sin(this.game.time.totalElapsedSeconds()))*20));
-                 
-                 this.Enemies[i].body.x = point.x;
-                 this.Enemies[i].body.y = point.y;
-             }
-             
-         }
-        
-        
-        if(this.cursores.right.isDown){
-              this.nave.body.x += this.speed;
-        }else
-        
-        if(this.cursores.left.isDown){
-              this.nave.body.x -= this.speed;
-        }else{
-             
-             this.nave.body.velocity.x =0;
-        }
-        
-        if(this.pKey.isDown){ 
-            if(!this.isPaused)
-            {
-                this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
-
-                this.game.paused = true; 
-                
+                        var indexWave = this.currIndexEnemiesPerWave;
+                        if(++this.currEnemiesPerWave >= this.numEnemiesPerWave[indexWave]){
+                            this.currEnemiesPerWave = 0;
+                            if(++this.currIndexEnemiesPerWave < this.numEnemiesPerWave.length - 1){
+                                this.nextWave = false;
+                            }
+                        }
+                    }
+                    this.currTimeToSpawnEnemy = 0.0;
+                }
+                else{
+                    this.currTimeToSpawnEnemy += this.game.time.elapsed / 1000.0;
+                }
             }
             else{
-                this.pauseText.destroy();
-                this.game.paused = false;
+                if(this.currTimeToSpawnWave >= this.timeToSpawnWave){
+                    this.nextWave = true;
+                    this.currTimeToSpawnWave = 0.0;
+                }
+                else{
+                    this.currTimeToSpawnWave += this.game.time.elapsed / 1000.0;
+                }
             }
         }
-        if(this.rKey.isDown)
-            {
-                galaga.game.state.start('main');
+        else{
+            ///Movimineto Separacion
+            for(var i = 0; i < this.Enemies.length; i++){
+                var point = Phaser.Point.add(this.Enemies[i].finalPosition, Phaser.Point.normalize(Phaser.Point.subtract(
+                            this.Enemies[i].finalPosition, new Phaser.Point(gameOptions.gameWidth/2,80))).setMagnitude(
+                            Math.abs(Math.sin(this.game.time.totalElapsedSeconds()))*20));
+
+                this.Enemies[i].body.x = point.x;
+                this.Enemies[i].body.y = point.y;
             }
-        
-        if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1)))
-        {
-            this.createBullet();
         }
-        
-        this.time++;
     },
     
+    update:function(){
+        this.updateHUD();
         
+        if(this.gameStarted){
+            this.updateEnemies();
+                
+            if(this.cursores.right.isDown){
+                this.nave.body.x += this.speed;
+            }
+            else if(this.cursores.left.isDown){
+                this.nave.body.x -= this.speed;
+            }else{
+                this.nave.body.velocity.x =0;
+            }
+
+            if(this.pKey.isDown){ 
+                if(!this.isPaused){
+                    this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
+                    this.game.paused = true; 
+                }
+                else{
+                    this.pauseText.destroy();
+                    this.game.paused = false;
+                }
+            }
+            if(this.rKey.isDown){
+                galaga.game.state.start('main');
+            }
+
+            if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
+                this.createBullet();
+            }
+
+            this.time++;
+        }
+    },
     
+            
 }

@@ -6,6 +6,7 @@ var gameOptions={
     gameHeight:512, 
     playerLifes:3,
     highScore:20000,
+    speedEnemies:0.015
 };
 
 galaga.game = new Phaser.Game(gameOptions.gameWidth,gameOptions.gameHeight,Phaser.AUTO,null,this,false,false);
