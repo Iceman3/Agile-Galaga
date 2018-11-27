@@ -337,10 +337,17 @@ galaga.gameState = {
                     this.Enemies[i].body.x = point.x;
                     this.Enemies[i].body.y = point.y;
                     
-                    var angle = this.game.physics.arcade.angleBetween(this.Enemies[i].body, secondPoint);
-                    console.log(angle);
-                    this.Enemies[i].rotation = -angle;
-
+                    var angle = this.game.physics.arcade.angleBetween(secondPoint,this.Enemies[i].body);
+                   // console.log(this.Enemies.length);
+                   
+                    if(i>this.Enemies.length-5 && i < this.Enemies.length)
+                        {
+                            this.Enemies.rotation = 0;
+                        }
+                    else{
+                        this.Enemies[i].rotation = -angle;
+                    }
+                    
                     this.Enemies[i].interpolate += gameOptions.speedEnemies;
                     if(this.Enemies[i].interpolate >= 1.0){
                         this.Enemies[i].interpolate = 0.0;
@@ -348,13 +355,13 @@ galaga.gameState = {
                     }
                 }
                 else{
-                    if(this.Enemies[i].angle >0)
+                    if(this.Enemies[i].angle > 0)
                     {
-                        this.Enemies[i].angle --;        
+                        this.Enemies[i].angle -=4;        
                     }
-                    else if(this.Enemies[i].angle < 0)
+                    else if(this.Enemies[i].angle <0)
                         {
-                            this.Enemies[i].angle++;
+                            this.Enemies[i].angle +=4;
                         }
                 }
             }
