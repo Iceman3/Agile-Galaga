@@ -321,20 +321,41 @@ galaga.gameState = {
     updateEnemies:function(){
         if(this.initialMovement){
             for(var i = 0; i < this.currIndexEnemyToSpawn; i++){
-                if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
+                if(this.Enemies[i] == null){
+                    this.Enemies.splice(i, 1);
+                    this.currIndexEnemyToSpawn--;
+                    i--;
+                    console.log(this.Enemies.length + " - " + this.currIndexEnemyToSpawn);//
+                }
+                else if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
                     var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
-
-                    var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude() * this.Enemies[i].interpolate));
+                    
+                    var dir = Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude();
+                    var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(dir * this.Enemies[i].interpolate));
 
                     this.Enemies[i].body.x = point.x;
                     this.Enemies[i].body.y = point.y;
+                    
+                    var angle = this.game.physics.arcade.angleBetween(this.Enemies[i].body, secondPoint);
+                    console.log(angle);
+                    this.Enemies[i].rotation = -angle;
 
                     this.Enemies[i].interpolate += gameOptions.speedEnemies;
                     if(this.Enemies[i].interpolate >= 1.0){
                         this.Enemies[i].interpolate = 0.0;
                         this.Enemies[i].currentPath++;
                     }
+                }
+                else{
+                    if(this.Enemies[i].angle >0)
+                    {
+                        this.Enemies[i].angle --;        
+                    }
+                    else if(this.Enemies[i].angle < 0)
+                        {
+                            this.Enemies[i].angle++;
+                        }
                 }
             }
             
@@ -351,6 +372,7 @@ galaga.gameState = {
 
                         var indexWave = this.currIndexEnemiesPerWave;
                         if(++this.currEnemiesPerWave >= this.numEnemiesPerWave[indexWave]){
+                            console.log(this.currEnemiesPerWave);//
                             this.currEnemiesPerWave = 0;
                             if(++this.currIndexEnemiesPerWave < this.numEnemiesPerWave.length - 1){
                                 this.nextWave = false;
