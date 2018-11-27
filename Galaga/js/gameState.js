@@ -38,22 +38,9 @@ galaga.gameState = {
         
         this.gameStarted = false;
         this.isPaused = false;
-        
+        this.isChangingStage = false;
         this.playerLifes = gameOptions.playerLifes;
-        
-        
-        this.initialMovement = true;
-        
-        this.timeToSpawnEnemy = 0.065;
-        this.currTimeToSpawnEnemy = 0.0;
-        this.currIndexEnemyToSpawn = 0;
-        
-        this.numEnemiesPerWave = [8, 8, 8, 10, 10];
-        this.currEnemiesPerWave = 0;
-        this.currIndexEnemiesPerWave = 0;
-        this.nextWave = true;
-        this.timeToSpawnWave = 5.0;
-        this.currTimeToSpawnWave = 0.0;
+
     },
     
     create:function(){
@@ -63,7 +50,9 @@ galaga.gameState = {
         this.time = 0;
        
         //Puntos para Movimiento de Enemigos
-        this.rightSpawnPoint = new Phaser.Point(gameOptions.gameWidth +20, gameOptions.gameHeight * 0.7);
+        this.rightSpawnPoint = new Phaser.Point(gameOptions.gameWidth +20, gameOptions.gameHeight * 0.8);
+        this.leftSpawnPoint = new Phaser.Point(-20, gameOptions.gameHeight * 0.8);
+        this.topSpawnPoint = new Phaser.Point(gameOptions.gameWidth/2, -20);
         this.centerPoint = new Phaser.Point(gameOptions.gameWidth/2, gameOptions.gameHeight/2);
         
         this.sndStageIntro = this.game.add.audio('sndStageIntro');
@@ -87,6 +76,24 @@ galaga.gameState = {
     },
     
     initGrid:function(){
+        
+                
+        this.isChangingStage = true;
+
+        
+        this.initialMovement = true;
+        
+        this.timeToSpawnEnemy = 0.065;
+        this.currTimeToSpawnEnemy = 0.0;
+        this.currIndexEnemyToSpawn = 0;
+        
+        this.numEnemiesPerWave = [8, 8, 8, 10, 10];
+        this.currEnemiesPerWave = 0;
+        this.currIndexEnemiesPerWave = 0;
+        this.nextWave = true;
+        this.timeToSpawnWave = 5.0;
+        this.currTimeToSpawnWave = 0.0;
+        
         this.EnemiesGrid = [
             'xxxGGGGxxx',
             'RRRRRRRRRR',
@@ -97,7 +104,7 @@ galaga.gameState = {
             
         this.Enemies = [];
         this.enemyBullets = this.add.group();
-        
+        this.p=0;
         for(var i = 0; i < this.EnemiesGrid.length; i++)
         {
             for(var j = 0; j < this.EnemiesGrid[i].length; j++)
@@ -106,9 +113,11 @@ galaga.gameState = {
                 {
                     case 'Y':
                         var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
-                        this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
+                        var spawnPoint = new Phaser.Point(this.topSpawnPoint.x,this.topSpawnPoint.y);
+                        
+                        this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
 
-                        this.yellowEnemy.path.push(this.rightSpawnPoint);
+                        this.yellowEnemy.path.push(spawnPoint);
                         this.yellowEnemy.path.push(this.centerPoint);
                         this.yellowEnemy.path.push(finalPoint);
                         
@@ -121,23 +130,38 @@ galaga.gameState = {
 
                     case 'R':
                         var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
-                        this.redEnemy = new galaga.redEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
+                        var spawnPoint = new Phaser.Point(0,0);
+                        
+                        if(this.p<4)
+                            {
+                                spawnPoint = this.leftSpawnPoint;
+                            }
+                        else if(this.p>=4 && this.p <12 ){
+                            spawnPoint = this.rightSpawnPoint;
+                        }
+                        else{
+                            spawnPoint = this.topSpawnPoint;
+                        }
+                        this.redEnemy = new galaga.redEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
 
-                        this.redEnemy.path.push(this.rightSpawnPoint);
+                        this.redEnemy.path.push(spawnPoint);
                         this.redEnemy.path.push(this.centerPoint);
                         this.redEnemy.path.push(finalPoint);
 
                         this.redEnemy.enableBody = true;
                         this.redEnemy.vel = 20 * this.numberStage;
                         this.Enemies.push(this.game.add.existing(this.redEnemy));
+                        this.p++;
 
                         break;
 
                     case 'G':
                         var finalPoint = new Phaser.Point(50+(16*j),80+(16*i));
-                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,this.rightSpawnPoint.x,this.rightSpawnPoint.y,finalPoint.x,finalPoint.y,this);
+                        var spawnPoint = new Phaser.Point(this.leftSpawnPoint.x,this.leftSpawnPoint.y);
 
-                        this.greenEnemy.path.push(this.rightSpawnPoint);
+                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
+
+                        this.greenEnemy.path.push(spawnPoint);
                         this.greenEnemy.path.push(this.centerPoint);
                         this.greenEnemy.path.push(finalPoint);
 
@@ -188,19 +212,21 @@ galaga.gameState = {
         this.stageinfoStarts.destroy();
         this.stageOffset = 10;
         
+        
+        
         for(var i=1; i<=this.numberStage;i++){
             this.insigniaStage = this.game.add.sprite(gameOptions.gameWidth - (i*this.stageOffset), gameOptions.gameHeight - 20,'insignia1');
         }
-        
+        console.log(this.playerLifes);
         this.lifesOffset = 24;       
        // for(var i=1; i<gameOptions.playerLifes;i++){
         if(this.playerLifes >= 3)
         {
-            this.playerlife1= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
+            this.playerlife1= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
         if(this.playerLifes >= 2)
         {
-            this.playerlife2= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
+            this.playerlife2= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
         
         //this.initEnemies();
@@ -274,10 +300,10 @@ galaga.gameState = {
     restartPlayer:function()
     {
         if(this.playerLifes==3){
-            this.playerlife2.destroy();
+            this.playerlife1.destroy();
         }
         else if(this.playerLifes == 2){
-            this.playerlife1.destroy();
+            this.playerlife2.destroy();
         }
         
         this.playerLifes--;
@@ -325,7 +351,7 @@ galaga.gameState = {
                     this.Enemies.splice(i, 1);
                     this.currIndexEnemyToSpawn--;
                     i--;
-                    console.log(this.Enemies.length + " - " + this.currIndexEnemyToSpawn);//
+                    //console.log(this.Enemies.length + " - " + this.currIndexEnemyToSpawn);//
                 }
                 else if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
@@ -381,7 +407,7 @@ galaga.gameState = {
                         if(++this.currEnemiesPerWave >= this.numEnemiesPerWave[indexWave]){
                             console.log(this.currEnemiesPerWave);//
                             this.currEnemiesPerWave = 0;
-                            if(++this.currIndexEnemiesPerWave < this.numEnemiesPerWave.length - 1){
+                            if(++this.currIndexEnemiesPerWave <= this.numEnemiesPerWave.length - 1){
                                 this.nextWave = false;
                             }
                         }
@@ -429,7 +455,21 @@ galaga.gameState = {
             }else{
                 this.nave.body.velocity.x =0;
             }
+            
+            if(this.Enemies.length <=0 )
+            {
+                if(this.isChangingStage)
+                    {
+                        this.numberStage++;
+                        this.playerlife1.destroy();
+                        this.playerlife2.destroy();
+                        this.stageInfo();
+                    }
+                this.isChangingStage = false;
 
+
+            }
+            
             if(this.pKey.isDown){ 
                 if(!this.isPaused){
                     this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
