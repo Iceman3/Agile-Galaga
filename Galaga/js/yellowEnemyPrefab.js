@@ -14,6 +14,8 @@ galaga.yellowEnemyPrefab = function(game,x,y,finalX,finalY,level){
     this.path = [];
     this.interpolate = 0;
     this.currentPath = 0;
+    this.indexX;
+    this.indexY;
     
     this.game.physics.arcade.enable(this);
     

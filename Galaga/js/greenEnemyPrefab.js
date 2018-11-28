@@ -14,6 +14,8 @@ galaga.greenEnemyPrefab = function(game,x,y,finalX,finalY,level){
     this.path = [];
     this.interpolate = 0;
     this.currentPath = 0;
+    this.indexX;
+    this.indexY;
     
     this.lifes = 2;
     
