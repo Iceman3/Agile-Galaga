@@ -97,6 +97,9 @@ galaga.gameState = {
         this.nextWave = true;
         this.timeToSpawnWave = 5.0;
         this.currTimeToSpawnWave = 0.0;
+
+        this.numEnemiesAttack = 2;
+        this.indxEnemiesAttack = [];
         
         this.EnemiesGrid = [
             'xxxGGGGxxx',
@@ -193,6 +196,7 @@ galaga.gameState = {
         }
 
         this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
+        
         this.gameStarted = true;
     },
     
@@ -249,6 +253,15 @@ galaga.gameState = {
         this.initGrid();
         
         this.nave.canShoot = true;
+    },
+    
+    whoEnemiesAttack:function(){
+        var randomNumber;
+        for(var i = 0; i < this.numEnemiesAttack; i++){
+            randomNumber = Math.floor(Math.random() * this.Enemies.length);
+            this.indxEnemiesAttack.push(randomNumber);
+            console.log("who: " + randomNumber);//
+        }
     },
     
     updateHUD: function(){
@@ -361,12 +374,11 @@ galaga.gameState = {
         
         
         
-        
         for(var i = 0; i < this.Enemies.length ; i++)
             
         {
             var offset =  Math.sin(this.game.time.now/ 1000) * this.gridDistanceMultiplier;// + this.gridDistanceMultiplier/2;
-            console.log(this.game.time);
+            //console.log(this.game.time);
             
             
                     var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
@@ -383,13 +395,8 @@ galaga.gameState = {
         
         if(this.initialMovement){
             for(var i = 0; i < this.currIndexEnemyToSpawn; i++){
-                if(this.Enemies[i] == null){
-                    this.Enemies.splice(i, 1);
-                    this.currIndexEnemyToSpawn--;
-                    i--;
-                    //console.log(this.Enemies.length + " - " + this.currIndexEnemyToSpawn);//
-                }
-                else if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
+                
+                 if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
                     var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
                     
@@ -417,14 +424,17 @@ galaga.gameState = {
                     }
                 }
                 else{
-                    if(this.Enemies[i].angle > 0)
+                    if(this.Enemies[i].angle > 1)
                     {
-                        this.Enemies[i].angle -=4;        
+                        this.Enemies[i].angle--;        
                     }
-                    else if(this.Enemies[i].angle <0)
-                        {
-                            this.Enemies[i].angle +=4;
-                        }
+                    else if(this.Enemies[i].angle <1)
+                    {
+                            this.Enemies[i].angle++;
+                    }
+                    else if(this.Enemies[i].angle != 0){
+                        this.Enemies[i].angle = 0;
+                    }
                 }
             }
             
@@ -434,6 +444,13 @@ galaga.gameState = {
                     if(i >= this.Enemies.length){
                         if(this.Enemies[i - 1].currentPath >= this.Enemies[i - 1].path.length - 1){
                             this.initialMovement = false;
+                            this.whoEnemiesAttack();
+                                 
+                            for(var i = 0; i < this.Enemies.length ; i++){
+                                this.Enemies[i].angle = 0;
+                                this.Enemies[i].path = [];
+                            }
+
                         }
                     }
                     else{
@@ -441,7 +458,6 @@ galaga.gameState = {
 
                         var indexWave = this.currIndexEnemiesPerWave;
                         if(++this.currEnemiesPerWave >= this.numEnemiesPerWave[indexWave]){
-                            console.log(this.currEnemiesPerWave);//
                             this.currEnemiesPerWave = 0;
                             if(++this.currIndexEnemiesPerWave <= this.numEnemiesPerWave.length - 1){
                                 this.nextWave = false;
@@ -464,13 +480,36 @@ galaga.gameState = {
                 }
             }
         }else{
+            for(var n = 0; n < this.indxEnemiesAttack; n++){
+                if(this.indxEnemiesAttack[n] >= this.Enemies.length){
+                    this.whoEnemiesAttack();
+                    break;
+                }
+            }
+            
+            //Movimiento Separación
             for(var i = 0; i < this.Enemies.length; i++){
+                var thisEnemieAttack = false;
+                for(var n = 0; n < this.numEnemiesAttack; n++){
+                    if(i == this.indxEnemiesAttack[n]){
+                        thisEnemieAttack = true;
+                        break;
+                    }
+                }
                 
-                this.Enemies[i].body.x = this.Enemies[i].finalPosition.x;                
-                this.Enemies[i].body.y = this.Enemies[i].finalPosition.y;
+                if(!thisEnemieAttack){
+                    this.Enemies[i].body.x = this.Enemies[i].finalPosition.x;                
+                    this.Enemies[i].body.y = this.Enemies[i].finalPosition.y;
+                }
+                else{
+                    //Si no hacemos el movimiento de ataque
+                    this.Enemies[i].body.y++;
+                    console.log("xD");//
+                }
             }
             
         }
+   
         
     },
     

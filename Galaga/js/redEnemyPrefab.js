@@ -27,7 +27,13 @@ galaga.redEnemyPrefab.prototype.constructor = galaga.redEnemyPrefab;
 
 galaga.redEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
 {
-    this.level.Enemies.splice(this.level.Enemies.indexOf(enemy),1);
+   
+    this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
+                
+    this.level.currIndexEnemyToSpawn--;
+                   
+    
+    
     enemy.kill();
     bullet.kill();
     this.explosion = this.game.add.sprite(enemy.body.x+8,enemy.body.y+8,'enemy_explosion');

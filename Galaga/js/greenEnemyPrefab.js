@@ -30,7 +30,11 @@ galaga.greenEnemyPrefab.prototype.constructor = galaga.greenEnemyPrefab;
 galaga.greenEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
 {
     if(--this.lifes <= 0){
-        this.level.Enemies.splice(this.level.Enemies.indexOf(enemy),1);
+        
+        this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
+                    
+         this.level.currIndexEnemyToSpawn--;
+      
         enemy.kill();
         this.explosion = this.game.add.sprite(enemy.body.x+8,enemy.body.y+8,'enemy_explosion');
 
@@ -57,5 +61,5 @@ galaga.greenEnemyPrefab.prototype.stopExplosion = function(){
 };
 
 galaga.greenEnemyPrefab.prototype.update = function(){
-    this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);   
+    this.game.physics.arcade.overlap(this,this.level.bullets,this.hitBullet,null,this);   
 };
