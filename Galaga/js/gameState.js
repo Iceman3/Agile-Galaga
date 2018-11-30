@@ -1,4 +1,5 @@
 var galaga = galaga || {};
+
   
 galaga.gameState = {
     
@@ -25,8 +26,6 @@ galaga.gameState = {
         this.game.load.audio('sndEnemy2Death', 'assets/sounds/snd_enemy2_death.wav');
         this.game.load.audio('sndPlayerShoot', 'assets/sounds/snd_player_shoot.wav');
         this.game.load.audio('sndPlayerDeath', 'assets/sounds/snd_player_death.wav');
-        
-        this.game.load.bitmapFont('galaga', 'assets/fonts/galaga.png', 'assets/fonts/galaga.fnt');
         
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -202,23 +201,17 @@ galaga.gameState = {
     },
     
     initHud:function(){        
-        /*this.infoStyle = { font: "15px galaga", fill: "#00FFFF",};
+        this.infoStyle = { font: "15px galaga", fill: "#00FFFF",};
         this.topStyle = { font: "15px galaga", fill: "#FF0000",};
-        this.scoreStyle = { font: "15px galaga", fill: "#FFFFFF", align: "center",};*/
+        this.scoreStyle = { font: "15px galaga", fill: "#FFFFFF", align: "center",};
+        this.playerText = this.game.add.text(20,0, "1UP", this.topStyle); 
+        this.playerScore = this.game.add.text(40,15, this.score, this.scoreStyle); 
         
-        this.playerText = this.game.add.bitmapText(20, 0, 'galaga','1UP',15);
-        this.playerText.tint = 0xFF0000;
-        this.playerScore = this.game.add.bitmapText(40,15,'galaga',this.score.toString(),15); 
-        this.playerScore.tint = 0xFFFFFF;
-        this.topText = this.game.add.bitmapText(gameOptions.gameWidth/2 - 30,0, 'galaga','HIGH SCORE',15); 
-        this.topText.tint = 0xFF0000;
+        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGH SCORE", this.topStyle); 
+        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-15,15, this.highScore, this.scoreStyle); 
         
-        this.playerHighScore = this.game.add.bitmapText(gameOptions.gameWidth/2-15,15,'galaga',this.highScore.toString(),15); 
-        this.playerHighScore.tint = 0xFFFFFF;
-        
-        this.playerinfoStarts = this.game.add.bitmapText(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2,'galaga', 'PLAYER 1',15);
-        this.playerinfoStarts.tint = 0x00FFFF;
-        
+        this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
+
         this.game.time.events.add(Phaser.Timer.SECOND, this.changeInfo, this);
     },
     
@@ -228,9 +221,8 @@ galaga.gameState = {
     },
     
     stageInfo:function(){
-        this.stageinfoStarts = this.game.add.bitmapText(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2,'galaga', "STAGE " + this.numberStage.toString(), 15); 
-        this.stageinfoStarts.tint = 0x00FFFF;
-        this.game.time.events.add(Phaser.Timer.SECOND * 3.75, this.initGame, this);
+         this.stageinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "STAGE " + this.numberStage, this.infoStyle); 
+         this.game.time.events.add(Phaser.Timer.SECOND * 3.75, this.initGame, this);
     },
     
     initGame:function(){
@@ -268,14 +260,15 @@ galaga.gameState = {
         for(var i = 0; i < this.numEnemiesAttack; i++){
             randomNumber = Math.floor(Math.random() * this.Enemies.length);
             this.indxEnemiesAttack.push(randomNumber);
+            console.log("who: " + randomNumber);//
         }
     },
     
     updateHUD: function(){
-        this.playerScore.setText(this.score.toString());
+        this.playerScore.setText(this.score); 
         if(this.score > this.highScore)
         {
-            this.playerHighScore.setText(this.score.toString());
+            this.playerHighScore.setText(this.score);
         }
         
         
@@ -346,8 +339,7 @@ galaga.gameState = {
             this.game.add.existing(this.nave);
         }
         else{
-            this.endGameText = this.game.add.bitmapText(gameOptions.gameWidth/2 - 40,gameOptions.gameHeight/2,'galaga','GAME OVER', 15);
-            this.endGameText.tint = 0x00FFFF;
+            this.endGameText = this.game.add.text(gameOptions.gameWidth/2 - 40,gameOptions.gameHeight/2, "GAME OVER", this.infoStyle);
         }
     },
     
@@ -378,17 +370,27 @@ galaga.gameState = {
         }
     },
     
-    updateEnemies:function(){        
-        for(var i = 0; i < this.Enemies.length ; i++){
+    updateEnemies:function(){
+        
+        
+        
+        for(var i = 0; i < this.Enemies.length ; i++)
+            
+        {
             var offset =  Math.sin(this.game.time.now/ 1000) * this.gridDistanceMultiplier;// + this.gridDistanceMultiplier/2;
             //console.log(this.game.time);
             
             
-            var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
+                    var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
 
-            this.Enemies[i].path[this.Enemies[i].path.length -1] = finalPoint; 
-            this.Enemies[i].finalPosition = finalPoint;
+                    this.Enemies[i].path[this.Enemies[i].path.length -1] = finalPoint; 
+                    this.Enemies[i].finalPosition = finalPoint;
         }
+        
+        
+          
+        
+        
         
         
         if(this.initialMovement){
@@ -542,8 +544,7 @@ galaga.gameState = {
             
             if(this.pKey.isDown){ 
                 if(!this.isPaused){
-                    this.pauseText = this.game.add.bitmapText(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2,'galaga', 'Paused', 15);
-                    this.pauseText.tint = 0xFFFFFF;
+                    this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
                     this.game.paused = true; 
                 }
                 else{
