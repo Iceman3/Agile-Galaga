@@ -201,14 +201,15 @@ galaga.gameState = {
     },
     
     initHud:function(){        
-        this.infoStyle = { font: "15px galaga", fill: "#00FFFF",};
-        this.topStyle = { font: "15px galaga", fill: "#FF0000",};
-        this.scoreStyle = { font: "15px galaga", fill: "#FFFFFF", align: "center",};
+        this.infoStyle = { font: "15px galaga", fill: "#00FFFF"};
+        this.topStyle = { font: "18px galaga", fill: "#FF0000", align: "center" };
+        this.scoreStyle = { font: "18px galaga", fill: "#FFFFFF", align: "center" };
+        
         this.playerText = this.game.add.text(20,0, "1UP", this.topStyle); 
-        this.playerScore = this.game.add.text(40,15, this.score, this.scoreStyle); 
+        this.playerScore = this.game.add.text(30,15, this.score, this.scoreStyle); 
         
         this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGH SCORE", this.topStyle); 
-        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-15,15, this.highScore, this.scoreStyle); 
+        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-5,15, this.highScore, this.scoreStyle);
         
         this.playerinfoStarts = this.game.add.text(gameOptions.gameWidth/2 - 30, gameOptions.gameHeight/2, "PLAYER 1", this.infoStyle); 
 

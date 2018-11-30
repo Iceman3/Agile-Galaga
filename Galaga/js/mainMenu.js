@@ -93,7 +93,7 @@ galaga.mainMenu = {
         this.topStyle = { font: "18px galaga", fill: "#FF0000"};
         this.namcoStyle = { font: "22px galaga", fill: "#FF0000", font_weight:"bold" };
         this.lifeStyle = { font: "18px galaga", fill: "#FFFF00"};
-        this.scoreStyle = { font: "18px galaga", fill: "#FFFFFF", align: "center"};
+        this.scoreStyle = { font: "18px galaga", fill: "#FFFFFF", align: "center" };
         
         this.playerText = this.game.add.text(20,0, "1UP", this.topStyle);
         
