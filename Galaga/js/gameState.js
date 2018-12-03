@@ -3,7 +3,7 @@ var galaga = galaga || {};
   
 galaga.gameState = {
     
-    preload:function(){
+    preload: function (){
         //cargamos assets
         this.stage.backgroundColor = "#000000";
         
@@ -401,11 +401,21 @@ galaga.gameState = {
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
                     var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
                     
-                    var dir = Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude();
-                    var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(dir * this.Enemies[i].interpolate));
+                    //var dir = Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude();
+                   // var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(dir * this.Enemies[i].interpolate));
+                     
+                     var r = 100;
+                     var dir = Phaser.Point.subtract(1, 0).normalize();
+                     var Vi = new Phaser.Point(dir.y,dir.x);
+                     var c = Phaser.Point.add(firstPoint,Vi.setMagnitude(r));
+                     console.log(c.x, "  " , c.y);
+                     var point = new Phaser.Point(Math.cos(this.Enemies[i].interpolate) * r + c.x, Math.sin(this.Enemies[i].interpolate) * r + c.y );
+                     
+                     
+                     
 
-                    this.Enemies[i].body.x = point.x;
-                    this.Enemies[i].body.y = point.y;
+                    this.Enemies[i].body.x = c.x;
+                    this.Enemies[i].body.y = c.y;
                     
                     var angle = this.game.physics.arcade.angleBetween(secondPoint,this.Enemies[i].body);
                    // console.log(this.Enemies.length);
