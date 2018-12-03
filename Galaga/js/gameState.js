@@ -58,6 +58,7 @@ galaga.gameState = {
         this.leftSpawnPoint = new Phaser.Point(-20, gameOptions.gameHeight * 0.8);
         this.topSpawnPoint = new Phaser.Point(gameOptions.gameWidth/2, -20);
         this.centerPoint = new Phaser.Point(gameOptions.gameWidth/2, gameOptions.gameHeight/2);
+
         
         this.sndStageIntro = this.game.add.audio('sndStageIntro');
         this.sndEnemyShoot = this.game.add.audio('sndEnemyShoot');
@@ -401,21 +402,24 @@ galaga.gameState = {
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
                     var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
                     
-                    //var dir = Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude();
-                   // var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(dir * this.Enemies[i].interpolate));
+                    var dir = Phaser.Point.subtract(secondPoint, firstPoint).getMagnitude();
+                    var point = Phaser.Point.add(firstPoint, Phaser.Point.subtract(secondPoint, firstPoint).setMagnitude(dir * this.Enemies[i].interpolate));
                      
-                     var r = 100;
-                     var dir = Phaser.Point.subtract(1, 0).normalize();
-                     var Vi = new Phaser.Point(dir.y,dir.x);
-                     var c = Phaser.Point.add(firstPoint,Vi.setMagnitude(r));
-                     console.log(c.x, "  " , c.y);
-                     var point = new Phaser.Point(Math.cos(this.Enemies[i].interpolate) * r + c.x, Math.sin(this.Enemies[i].interpolate) * r + c.y );
+                     //********
+                     // W I P 
+                     //*******
+                    // var r = 100;
+                    // var dir = Phaser.Point.subtract(1, 0).normalize();
+                     //var Vi = new Phaser.Point(dir.y,dir.x);
+                    // var c = Phaser.Point.add(firstPoint,Vi.setMagnitude(r));
+                    // console.log(c.x, "  " , c.y);
+                    // var point = new Phaser.Point(Math.cos(this.Enemies[i].interpolate) * r + c.x, Math.sin(this.Enemies[i].interpolate) * r + c.y );
                      
                      
                      
 
-                    this.Enemies[i].body.x = c.x;
-                    this.Enemies[i].body.y = c.y;
+                    this.Enemies[i].body.x = point.x;
+                    this.Enemies[i].body.y = point.y;
                     
                     var angle = this.game.physics.arcade.angleBetween(secondPoint,this.Enemies[i].body);
                    // console.log(this.Enemies.length);
@@ -435,6 +439,11 @@ galaga.gameState = {
                     }
                 }
                 else{
+                    
+                    
+                    
+                    this.Enemies[i].body.x =  this.Enemies[i].finalPosition.x;
+                    this.Enemies[i].body.y =  this.Enemies[i].finalPosition.y;
                     if(this.Enemies[i].angle > 1)
                     {
                         this.Enemies[i].angle--;        
@@ -515,7 +524,21 @@ galaga.gameState = {
                 else{
                     //Si no hacemos el movimiento de ataque
                     this.Enemies[i].body.y++;
-                    console.log("xD");//
+                    this.Enemies[i].body.x = this.Enemies[i].finalPosition.x;
+                    
+                    if(this.Enemies[i].body.y >= gameOptions.gameHeight + 30){               
+                        this.Enemies[i].body.y = 0;
+                    }
+                        
+                    if(this.Enemies[i].body.y > 50 && this.Enemies[i].body.y < 55){
+                        this.Enemies[i].body.x = this.Enemies[i].finalPosition.x;                
+                        this.Enemies[i].body.y = this.Enemies[i].finalPosition.y;
+                        this.indxEnemiesAttack = [];
+                        this.whoEnemiesAttack();
+                       
+                    }
+                    
+                   
                 }
             }
             
