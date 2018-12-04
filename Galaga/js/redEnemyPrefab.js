@@ -21,6 +21,8 @@ galaga.redEnemyPrefab = function(game,x,y,finalX,finalY,level){
     
 };
 
+
+
 galaga.redEnemyPrefab.prototype = Object.create(Phaser.Sprite.prototype);
 
 galaga.redEnemyPrefab.prototype.constructor = galaga.redEnemyPrefab;
@@ -49,10 +51,12 @@ galaga.redEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     this.level.sndEnemy1Death.play();
 };
 
+
 galaga.redEnemyPrefab.prototype.stopExplosion = function(){
     this.explosion.kill();
 };
 
 galaga.redEnemyPrefab.prototype.update = function(){
     this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);   
+   
 };

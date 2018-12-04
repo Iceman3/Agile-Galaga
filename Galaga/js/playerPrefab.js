@@ -32,6 +32,20 @@ galaga.playerPrefab.prototype.hitBullet = function(player,bullet){
     this.game.time.events.add(Phaser.Timer.SECOND*1,this.stopExplosion,this);
 };
 
+galaga.playerPrefab.prototype.hitEnemy = function(player,enemy){
+    
+    this.canShoot = false;
+    player.kill();
+      
+    this.level.sndPlayerDeath.startTime = 1.5;
+    this.level.sndPlayerDeath.play();
+    
+    this.explosion = this.game.add.sprite(player.body.x,player.body.y,'player_explosion');
+    this.explosion.animations.add('die', [0,1,2,3],5,false);
+    this.explosion.animations.play('die');
+    this.game.time.events.add(Phaser.Timer.SECOND*1,this.stopExplosion,this);
+
+};
 galaga.playerPrefab.prototype.stopExplosion = function(){
     this.explosion.kill();
     this.level.restartPlayer();
@@ -40,5 +54,6 @@ galaga.playerPrefab.prototype.stopExplosion = function(){
 
 galaga.playerPrefab.prototype.update = function(){
     this.game.physics.arcade.collide(this,this.level.enemyBullets,this.hitBullet,null,this);
+    this.game.physics.arcade.overlap(this,this.level.Enemies,this.hitEnemy,null,this);
 };
    
