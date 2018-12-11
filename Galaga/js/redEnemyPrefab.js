@@ -49,6 +49,7 @@ galaga.redEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     
     this.level.sndEnemyHit.play();
     this.level.sndEnemy1Death.play();
+     this.level.numberHits++;
 };
 
 
@@ -58,5 +59,10 @@ galaga.redEnemyPrefab.prototype.stopExplosion = function(){
 
 galaga.redEnemyPrefab.prototype.update = function(){
     this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);   
+    if(this.level.endGame){
+        this.kill(); 
+        this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
+        this.level.currIndexEnemyToSpawn--;
+    }
    
 };

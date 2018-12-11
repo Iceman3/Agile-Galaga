@@ -36,6 +36,11 @@ galaga.gameState = {
         this.highScore = gameOptions.highScore;
         this.numberStage = 1;
         
+        this.shotFired =0;
+        this.numberHits = 0;
+        
+        this.endGame = false;
+        
         this.gameStarted = false;
         this.isPaused = false;
         this.isChangingStage = false;
@@ -341,8 +346,33 @@ galaga.gameState = {
             this.game.add.existing(this.nave);
         }
         else{
-            this.endGameText = this.game.add.text(gameOptions.gameWidth/2 - 40,gameOptions.gameHeight/2, "GAME OVER", this.infoStyle);
+            this.endGameText = this.game.add.text(gameOptions.gameWidth/2 - 35,gameOptions.gameHeight/2, "GAME OVER", this.infoStyle);
+            this.game.time.events.add(Phaser.Timer.SECOND * 3, this.resultInfo, this);
         }
+    },
+    
+    resultInfo:function(){
+        this.endGameText.destroy();
+        
+        this.endGame = true;
+        
+        //--RESULTS--
+        this.ResultTextStyle = { font: "20px galaga", fill: "#FF0000", align: "center" };
+        this.resultText = this.game.add.text(gameOptions.gameWidth/2 -55, gameOptions.gameHeight/2 +20, " -RESULTS- ",this.ResultTextStyle);
+        
+        // --NUMBER HITS --
+        this.PlayerResultTextStyle = { font: "20px galaga", fill: "#FFFF00", align: "center" };
+        this.playerShots = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +50, "SHOTS FIRED     " + this.shotFired,this.PlayerResultTextStyle);
+        this.playerShotsHit = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +80, "NUMBER OF HITS  " + this.numberHits,this.PlayerResultTextStyle);
+        
+        // -- HIT-MISS RATIO --
+        this.PlayerResultTextStyle = { font: "20px galaga", fill: "#FFFFFF", align: "center" };
+        this.ratio = (this.numberHits/this.shotFired) *100
+        if(this.numberHits ==0 || this.shotFired ==0)
+        {
+                this.ratio=0;
+        }
+        this.playerShotsMissed = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +110, "HIT-MISS RATIO  " +this.ratio.toFixed(1)+" %",this.PlayerResultTextStyle);
     },
     
     createBullet:function(){
@@ -562,7 +592,7 @@ galaga.gameState = {
                 this.nave.body.velocity.x =0;
             }
             
-            if(this.Enemies.length <=0 )
+            if(this.Enemies.length <=0 && this.endGame==false )
             {
                 if(this.isChangingStage)
                     {
@@ -592,6 +622,7 @@ galaga.gameState = {
 
             if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
                 this.createBullet();
+                this.shotFired ++;
             }
 
             this.time++;

@@ -45,6 +45,7 @@ galaga.yellowEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     
     this.level.sndEnemyHit.play();
     this.level.sndEnemy2Death.play();
+     this.level.numberHits++;
 };
 
 galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
@@ -52,5 +53,11 @@ galaga.yellowEnemyPrefab.prototype.stopExplosion = function(){
 };
 
 galaga.yellowEnemyPrefab.prototype.update = function(){
-    this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);   
+    this.game.physics.arcade.collide(this,this.level.bullets,this.hitBullet,null,this);  
+    
+     if(this.level.endGame){
+        this.kill();
+        this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
+        this.level.currIndexEnemyToSpawn--;
+    }
 };
