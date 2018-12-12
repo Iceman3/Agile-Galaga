@@ -18,6 +18,7 @@ galaga.gameState = {
         this.load.spritesheet('nave', 'assets/img/spr_player.png', 22, 24);
         this.load.spritesheet('enemy_explosion', 'assets/img/spr_enemy_explosion.png',32,32);
         this.load.spritesheet('player_explosion', 'assets/img/spr_player_explosion.png',32,32);
+        this.load.spritesheet('boss', 'assets/img/spr_bossGalaga.png',122,101);
         
         this.game.load.audio('sndStageIntro', 'assets/sounds/stage_intro.wav');
         this.game.load.audio('sndEnemyShoot', 'assets/sounds/snd_enemy_shoot.wav');
@@ -45,6 +46,8 @@ galaga.gameState = {
         this.isPaused = false;
         this.isChangingStage = false;
         this.playerLifes = gameOptions.playerLifes;
+        
+        this.isBossTime = false;
         
         this.gridDistance = 16;
         this.gridDistanceMultiplier = 4;
@@ -106,7 +109,17 @@ galaga.gameState = {
 
         this.numEnemiesAttack = 2;
         this.indxEnemiesAttack = [];
+        this.Enemies = [];       
+        this.enemyBullets = this.add.group();
         
+        
+    if(this.numberStage%5 ==0){
+        this.initBoss();
+    }
+    else{
+        
+      
+    
         this.EnemiesGrid = [
             'xxxGGGGxxx',
             'RRRRRRRRRR',
@@ -115,8 +128,7 @@ galaga.gameState = {
             'YYYYYYYYYY',            
         ];
             
-        this.Enemies = [];
-        this.enemyBullets = this.add.group();
+        
         this.p=0;
         for(var i = 0; i < this.EnemiesGrid.length; i++)
         {
@@ -200,7 +212,11 @@ galaga.gameState = {
                 }
             }
         }
+     }
+     
+        
 
+        this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
         this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
         
         this.gameStarted = true;
@@ -241,9 +257,8 @@ galaga.gameState = {
         for(var i=1; i<=this.numberStage;i++){
             this.insigniaStage = this.game.add.sprite(gameOptions.gameWidth - (i*this.stageOffset), gameOptions.gameHeight - 20,'insignia1');
         }
-        console.log(this.playerLifes);
+      
         this.lifesOffset = 24;       
-       // for(var i=1; i<gameOptions.playerLifes;i++){
         if(this.playerLifes >= 3)
         {
             this.playerlife1= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
@@ -253,9 +268,9 @@ galaga.gameState = {
             this.playerlife2= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
         
-        //this.initEnemies();
         
         this.game.add.existing(this.nave);
+        
         
         this.initGrid();
         
@@ -267,8 +282,16 @@ galaga.gameState = {
         for(var i = 0; i < this.numEnemiesAttack; i++){
             randomNumber = Math.floor(Math.random() * this.Enemies.length);
             this.indxEnemiesAttack.push(randomNumber);
-            console.log("who: " + randomNumber);//
+           // console.log("who: " + randomNumber);//
         }
+    },
+    
+    initBoss:function(){
+        this.isBossTime = true;
+        this.boss = new galaga.bossPrefab(this.game,gameOptions.gameWidth/2,100,this);
+        this.boss.enableBody = true;
+        this.game.add.existing(this.boss);  
+        
     },
     
     updateHUD: function(){
@@ -400,6 +423,21 @@ galaga.gameState = {
             this.enemyBullets.add(this.enemyBullet);
             this.sndEnemyShoot.play();
         }
+    },
+    
+    
+    bossShoot:function(){
+        this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.boss.body.x+50,this.boss.body.y+115,this);
+        this.enemyBullet.enableBody = true;
+        this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
+        this.enemyBullets.add(this.enemyBullet);
+        this.sndEnemyShoot.play();
+    },
+    
+    updateBoss:function(){
+        var offset =  Math.cos(this.game.time.now/ 1000) * 0.8;
+        this.boss.body.x += offset;
+        
     },
     
     updateEnemies:function(){
@@ -581,7 +619,13 @@ galaga.gameState = {
         this.updateHUD();
         
         if(this.gameStarted){
+            if(!this.isBossTime && this.Enemies.length != 0){
+                
             this.updateEnemies();
+            }
+            else{
+                this.updateBoss();
+            }
                 
             if(this.cursores.right.isDown){
                 this.nave.body.x += this.speed;
@@ -592,13 +636,23 @@ galaga.gameState = {
                 this.nave.body.velocity.x =0;
             }
             
-            if(this.Enemies.length <=0 && this.endGame==false )
+            if(this.Enemies.length <=0 && this.endGame==false && this.isBossTime == false )
             {
                 if(this.isChangingStage)
                     {
                         this.numberStage++;
-                        this.playerlife1.destroy();
-                        this.playerlife2.destroy();
+                        
+                        if(this.playerLifes >2)
+                        {
+                            
+                            this.playerlife1.destroy();
+                        }
+                        
+                        if(this.playerLifes >1){
+                            
+                            this.playerlife2.destroy();
+                        }
+                        
                         this.stageInfo();
                     }
                 this.isChangingStage = false;
