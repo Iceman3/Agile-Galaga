@@ -25,8 +25,9 @@ galaga.bossPrefab.prototype.hitBullet = function(enemy,bullet)
         
         enemy.kill();
         this.explosion = this.game.add.sprite(enemy.body.x+50,enemy.body.y+50,'enemy_explosion');
-
-        this.explosion.anchor.setTo(2);
+        
+        this.explosion.scale.setTo(5);
+        this.explosion.anchor.setTo(.5);
         this.explosion.animations.add('die', [0,1,2,3,4],30,false);
         this.explosion.animations.play('die');
 

@@ -43,7 +43,6 @@ galaga.gameState = {
         this.endGame = false;
         
         this.gameStarted = false;
-        this.isPaused = false;
         this.isChangingStage = false;
         this.playerLifes = gameOptions.playerLifes;
         
@@ -51,6 +50,8 @@ galaga.gameState = {
         
         this.gridDistance = 16;
         this.gridDistanceMultiplier = 4;
+        
+        
 
 
     },
@@ -115,6 +116,7 @@ galaga.gameState = {
         
     if(this.numberStage%5 ==0){
         this.initBoss();
+        this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
     }
     else{
         
@@ -216,8 +218,8 @@ galaga.gameState = {
      
         
 
-        this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
-        this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
+       
+       this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
         
         this.gameStarted = true;
     },
@@ -427,11 +429,13 @@ galaga.gameState = {
     
     
     bossShoot:function(){
-        this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.boss.body.x+50,this.boss.body.y+115,this);
-        this.enemyBullet.enableBody = true;
-        this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
-        this.enemyBullets.add(this.enemyBullet);
-        this.sndEnemyShoot.play();
+        if(this.isBossTime){
+            this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.boss.body.x+50,this.boss.body.y+115,this);
+            this.enemyBullet.enableBody = true;
+            this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
+            this.enemyBullets.add(this.enemyBullet);
+            this.sndEnemyShoot.play();
+        }
     },
     
     updateBoss:function(){
@@ -615,16 +619,34 @@ galaga.gameState = {
         
     },
     
+    unPause:function(){
+        this.game.paused = false;
+        this.pauseText.destroy();
+    
+                
+    },
+    
+    pauseGame:function(){
+                    this.pauseText = this.game.add.text(gameOptions.gameWidth/2-30, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
+                    this.game.paused = true; 
+                    this.pKey.onDown.add(function(){this.unPause();},this);
+                    this.game.input.disable = false;
+       
+                   
+    },
+    
     update:function(){
         this.updateHUD();
         
         if(this.gameStarted){
+            
             if(!this.isBossTime && this.Enemies.length != 0){
-                
-            this.updateEnemies();
+                   this.updateEnemies();
             }
             else{
-                this.updateBoss();
+                if(this.isBossTime){
+                    this.updateBoss();    
+                }
             }
                 
             if(this.cursores.right.isDown){
@@ -660,16 +682,15 @@ galaga.gameState = {
 
             }
             
-            if(this.pKey.isDown){ 
-                if(!this.isPaused){
-                    this.pauseText = this.game.add.text(gameOptions.gameWidth/2-40, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
-                    this.game.paused = true; 
-                }
-                else{
-                    this.pauseText.destroy();
-                    this.game.paused = false;
-                }
+            if(this.pKey.isDown && this.game.paused == false){ 
+               
+                this.pauseGame();
+               
             }
+            else if(this.pKey.isDown && this.game.paused == true){
+                this.unPause();
+            }
+            
             if(this.rKey.isDown){
                 galaga.game.state.start('main');
             }
@@ -678,6 +699,10 @@ galaga.gameState = {
                 this.createBullet();
                 this.shotFired ++;
             }
+            
+            
+            
+            
 
             this.time++;
         }
