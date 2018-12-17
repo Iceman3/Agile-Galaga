@@ -8,7 +8,7 @@ galaga.bossPrefab = function(game,x,y,level){
     this.animations.play('fly');
     this.level = level;
         
-    this.lifes = 20;
+    this.lifes = this.level.numberStage * 3;
     
     this.game.physics.arcade.enable(this);
     
@@ -37,6 +37,9 @@ galaga.bossPrefab.prototype.hitBullet = function(enemy,bullet)
         this.level.sndEnemyHit.play();
         this.level.sndEnemy2Death.play();
         this.level.isBossTime = false;
+
+            this.level.Enemies = [];
+        
     }
     else{
        
@@ -54,6 +57,7 @@ galaga.bossPrefab.prototype.update = function(){
     this.game.physics.arcade.overlap(this,this.level.bullets,this.hitBullet,null,this);   
      if(this.level.endGame){
         this.kill();
+        this.level.isBossTime=false;
        
     }
     

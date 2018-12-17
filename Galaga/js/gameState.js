@@ -48,6 +48,9 @@ galaga.gameState = {
         
         this.isBossTime = false;
         
+        this.bossRadius = 100;
+        this.numBossEnemies = 10;
+        
         this.gridDistance = 16;
         this.gridDistanceMultiplier = 4;
         
@@ -115,9 +118,14 @@ galaga.gameState = {
         
         
     if(this.numberStage%5 ==0){
+        //BOSS STAGE
+        
         this.initBoss();
         this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
+        
+        
     }
+        
     else{
         
       
@@ -219,7 +227,7 @@ galaga.gameState = {
         
 
        
-       this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*4 ,this.enemyShoot,this);
+       this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND ,this.enemyShoot,this);
         
         this.gameStarted = true;
     },
@@ -290,9 +298,32 @@ galaga.gameState = {
     
     initBoss:function(){
         this.isBossTime = true;
+        this.numBossEnemies= this.numberStage * 10;
         this.boss = new galaga.bossPrefab(this.game,gameOptions.gameWidth/2,100,this);
         this.boss.enableBody = true;
         this.game.add.existing(this.boss);  
+        
+        
+        
+             for(var i = 0; i < this.numBossEnemies; i++){
+            
+            
+              var finalPoint = new Phaser.Point(   Math.cos(0,01745 *i * 360/(this.numBossEnemies )) * this.bossRadius  + this.boss.body.x,Math.sin(0,01745 * i * 360/(this.numBossEnemies )) * this.bossRadius + this.boss.body.y   );
+
+                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,finalPoint.x,finalPoint.y,finalPoint.x,finalPoint.y,this);
+
+                       // this.greenEnemy.path.push(spawnPoint);
+                       // this.greenEnemy.path.push(this.centerPoint);
+                        this.greenEnemy.path.push(finalPoint);
+                       // this.greenEnemy.indexX = j;
+                       // this.greenEnemy.indexY = i;
+
+                        this.greenEnemy.enableBody = true;
+                        this.greenEnemy.vel = 20 * this.numberStage;
+                        this.Enemies.push(this.game.add.existing(this.greenEnemy));
+
+        }
+        
         
     },
     
@@ -432,6 +463,7 @@ galaga.gameState = {
         if(this.isBossTime){
             this.enemyBullet = new galaga.enemyBulletPrefab(this.game,this.boss.body.x+50,this.boss.body.y+115,this);
             this.enemyBullet.enableBody = true;
+            this.enemyBullet.scale.setTo(4);
             this.enemyBullet.body.velocity.y = this.enemyBulletSpeed;
             this.enemyBullets.add(this.enemyBullet);
             this.sndEnemyShoot.play();
@@ -441,6 +473,21 @@ galaga.gameState = {
     updateBoss:function(){
         var offset =  Math.cos(this.game.time.now/ 1000) * 0.8;
         this.boss.body.x += offset;
+        
+        
+         for(var i = 0; i < this.numBossEnemies; i++){
+            
+              var spawnPoint = new Phaser.Point(this.leftSpawnPoint.x,this.leftSpawnPoint.y);
+             
+              var rotationSpeed = this.game.time.now/1000;
+            
+              var finalPoint = new Phaser.Point(   Math.cos((0,01745 * i * (360/this.numBossEnemies) ) + rotationSpeed) * this.bossRadius  + this.boss.body.x + this.boss.body.width/2.5 ,Math.sin((0,01745 * i * (360/this.numBossEnemies)) + rotationSpeed ) * this.bossRadius + this.boss.body.y + this.boss.body.height/2   );
+
+                    
+                        this.Enemies[i].body.x=finalPoint.x;
+                        this.Enemies[i].body.y=finalPoint.y;
+
+        }
         
     },
     
@@ -694,10 +741,13 @@ galaga.gameState = {
             if(this.rKey.isDown){
                 galaga.game.state.start('main');
             }
-
-            if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
-                this.createBullet();
-                this.shotFired ++;
+            
+            
+            if(!this.endGame){
+                if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
+                    this.createBullet();
+                    this.shotFired ++;
+                }
             }
             
             

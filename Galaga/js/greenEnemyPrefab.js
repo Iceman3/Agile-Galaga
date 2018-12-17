@@ -32,6 +32,7 @@ galaga.greenEnemyPrefab.prototype.hitBullet = function(enemy,bullet)
     if(--this.lifes <= 0){
         
         this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
+        this.level.numBossEnemies--;
                     
          this.level.currIndexEnemyToSpawn--;
       
@@ -67,6 +68,12 @@ galaga.greenEnemyPrefab.prototype.update = function(){
         this.kill();
         this.level.Enemies.splice(this.level.Enemies.indexOf(this),1);
         this.level.currIndexEnemyToSpawn--;
+        this.level.numBossEnemies--;
+        
+    }
+    
+    if(this.level.Enemies.length == 0){
+        this.kill();
     }
     
 };

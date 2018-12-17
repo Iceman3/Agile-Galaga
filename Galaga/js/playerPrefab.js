@@ -55,5 +55,6 @@ galaga.playerPrefab.prototype.stopExplosion = function(){
 galaga.playerPrefab.prototype.update = function(){
     this.game.physics.arcade.collide(this,this.level.enemyBullets,this.hitBullet,null,this);
     this.game.physics.arcade.overlap(this,this.level.Enemies,this.hitEnemy,null,this);
+    
 };
    
