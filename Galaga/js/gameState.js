@@ -372,7 +372,7 @@ galaga.gameState = {
     },
     
     flareStar:function(){
-        for(var i=0; i<=100; i++)
+        for(var i=0; i<=this.stars.length; i++)
         {
             if(this.stars[i].active)
             {
@@ -429,6 +429,8 @@ galaga.gameState = {
                 this.ratio=0;
         }
         this.playerShotsMissed = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +110, "HIT-MISS RATIO  " +this.ratio.toFixed(1)+" %",this.PlayerResultTextStyle);
+        
+        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.showHighscore, this);
     },
     
     createBullet:function(){
@@ -474,50 +476,33 @@ galaga.gameState = {
         var offset =  Math.cos(this.game.time.now/ 1000) * 0.8;
         this.boss.body.x += offset;
         
-        
          for(var i = 0; i < this.numBossEnemies; i++){
-            
               var spawnPoint = new Phaser.Point(this.leftSpawnPoint.x,this.leftSpawnPoint.y);
              
               var rotationSpeed = this.game.time.now/1000;
             
-              var finalPoint = new Phaser.Point(   Math.cos((0,01745 * i * (360/this.numBossEnemies) ) + rotationSpeed) * this.bossRadius  + this.boss.body.x + this.boss.body.width/2.5 ,Math.sin((0,01745 * i * (360/this.numBossEnemies)) + rotationSpeed ) * this.bossRadius + this.boss.body.y + this.boss.body.height/2   );
-
-                    
-                        this.Enemies[i].body.x=finalPoint.x;
-                        this.Enemies[i].body.y=finalPoint.y;
-
+              var finalPoint = new Phaser.Point(   Math.cos((0,01745 * i * (360/this.numBossEnemies) ) + rotationSpeed) * this.bossRadius  + this.boss.body.x + this.boss.body.width/2.5 ,Math.sin((0,01745 * i * (360/this.numBossEnemies)) + rotationSpeed) * this.bossRadius + this.boss.body.y + this.boss.body.height/2);
+  
+              this.Enemies[i].body.x=finalPoint.x;
+              this.Enemies[i].body.y=finalPoint.y;
         }
-        
     },
     
     updateEnemies:function(){
-        
-        
-        
         for(var i = 0; i < this.Enemies.length ; i++)
-            
         {
             var offset =  Math.sin(this.game.time.now/ 1000) * this.gridDistanceMultiplier;// + this.gridDistanceMultiplier/2;
             //console.log(this.game.time);
             
-            
-                    var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
+            var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
 
-                    this.Enemies[i].path[this.Enemies[i].path.length -1] = finalPoint; 
-                    this.Enemies[i].finalPosition = finalPoint;
+            this.Enemies[i].path[this.Enemies[i].path.length -1] = finalPoint; 
+            this.Enemies[i].finalPosition = finalPoint;
         }
-        
-        
-          
-        
-        
-        
         
         if(this.initialMovement){
             for(var i = 0; i < this.currIndexEnemyToSpawn; i++){
-                
-                 if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
+                if(this.Enemies[i].currentPath < this.Enemies[i].path.length - 1){
                     var firstPoint = this.Enemies[i].path[this.Enemies[i].currentPath];
                     var secondPoint = this.Enemies[i].path[this.Enemies[i].currentPath + 1];
                     
@@ -533,20 +518,16 @@ galaga.gameState = {
                     // var c = Phaser.Point.add(firstPoint,Vi.setMagnitude(r));
                     // console.log(c.x, "  " , c.y);
                     // var point = new Phaser.Point(Math.cos(this.Enemies[i].interpolate) * r + c.x, Math.sin(this.Enemies[i].interpolate) * r + c.y );
-                     
-                     
-                     
-
+                    
                     this.Enemies[i].body.x = point.x;
                     this.Enemies[i].body.y = point.y;
                     
                     var angle = this.game.physics.arcade.angleBetween(secondPoint,this.Enemies[i].body);
                    // console.log(this.Enemies.length);
                    
-                    if(i>this.Enemies.length-5 && i < this.Enemies.length)
-                        {
-                            this.Enemies.rotation = 0;
-                        }
+                    if(i>this.Enemies.length-5 && i < this.Enemies.length){
+                        this.Enemies.rotation = 0;
+                    }
                     else{
                         this.Enemies[i].rotation = -angle;
                     }
@@ -557,19 +538,15 @@ galaga.gameState = {
                         this.Enemies[i].currentPath++;
                     }
                 }
-                else{
-                    
-                    
-                    
+                else{                    
                     this.Enemies[i].body.x =  this.Enemies[i].finalPosition.x;
                     this.Enemies[i].body.y =  this.Enemies[i].finalPosition.y;
-                    if(this.Enemies[i].angle > 1)
-                    {
+                    
+                    if(this.Enemies[i].angle > 1){
                         this.Enemies[i].angle--;        
                     }
-                    else if(this.Enemies[i].angle <1)
-                    {
-                            this.Enemies[i].angle++;
+                    else if(this.Enemies[i].angle <1){
+                        this.Enemies[i].angle++;
                     }
                     else if(this.Enemies[i].angle != 0){
                         this.Enemies[i].angle = 0;
@@ -742,6 +719,9 @@ galaga.gameState = {
                 galaga.game.state.start('main');
             }
             
+            /*if(this.hKey.isDown){
+                this.showHighscore();
+            }*/
             
             if(!this.endGame){
                 if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
@@ -758,5 +738,71 @@ galaga.gameState = {
         }
     },
     
+    //*********************************************************
+    /*$.getJSON("highscore.json", function(json){
+        console.log(json);//
+        //if doesn't exist, create it
+            // JSON
+            var highscore = '{
+                "players": [
+                    {
+                        "pos": "1ST",
+                        "name": "AAAAAAAA",
+                        "score": "000000"
+                    },
+                    {
+                        "pos": "2ND",
+                        "name": "BBBBBBBB",
+                        "score": "000000"
+                    },
+                    {
+                        "pos": "3RD",
+                        "name": "CCCCCCCC",
+                        "score": "000000"
+                    },
+                    {
+                        "pos": "4TH",
+                        "name": "DDDDDDDD",
+                        "score": "000000"
+                    },
+                    {
+                        "pos": "5TH",
+                        "name": "EEEEEEEE",
+                        "score": "000000"
+                    }
+                ]
+            }';
+    },*/
+    //*********************************************************
+    
+    showHighscore:function(){
+        this.resultText.destroy();
+        this.playerShots.destroy();
+        this.playerShotsHit.destroy();
+        this.playerShotsMissed.destroy();
+        
+        this.styleText = { font: "20px galaga", fill: "#FF0000", align: "center" };
+        
+        this.topText = this.game.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight/2, "TOP 5",this.styleText);
+        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2)-30, "SCORE      NAME",this.styleText);
+        
+        this.positionsText = ["1ST", "2ND", "3RD", "4TH", "5TH"];
+        var topPlayer = jsonObj['topPlayer'];
+        var name;
+        var score;
+        
+        for(var i = 0; i < this.topPlayer.length; i++){
+            name = document.createElement('name');
+            score = document.createElement('score');
+            
+            name.textContent = topPlayers[i].name;
+            score.textContent = topPlayers[i].score;
+            
+            topPlayers.appendChild(name);
+            topPlayers.appendChild(score);
+            
+            section.appendChild(topPlayer);
+        }
+    }    
             
 }
