@@ -34,7 +34,7 @@ galaga.gameState = {
         this.enemyBulletSpeed = 100; 
         this.speed = 2;
         this.score = 0;
-        this.highScore = gameOptions.highScore;
+        this.highScore = 0;
         this.numberStage = 1;
         
         this.shotFired =0;
@@ -232,7 +232,12 @@ galaga.gameState = {
         this.gameStarted = true;
     },
     
-    initHud:function(){        
+    initHud:function(){
+        if(localStorage.getItem(scores) != null){
+            highscore = JSON.parse(localStorage.scores);
+            this.highScore = highscore.players[0].score;
+        }
+        
         this.infoStyle = { font: "15px galaga", fill: "#00FFFF"};
         this.topStyle = { font: "18px galaga", fill: "#FF0000", align: "center" };
         this.scoreStyle = { font: "18px galaga", fill: "#FFFFFF", align: "center" };
@@ -305,22 +310,22 @@ galaga.gameState = {
         
         
         
-             for(var i = 0; i < this.numBossEnemies; i++){
-            
-            
+         for(var i = 0; i < this.numBossEnemies; i++){
+
+
               var finalPoint = new Phaser.Point(   Math.cos(0,01745 *i * 360/(this.numBossEnemies )) * this.bossRadius  + this.boss.body.x,Math.sin(0,01745 * i * 360/(this.numBossEnemies )) * this.bossRadius + this.boss.body.y   );
 
-                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,finalPoint.x,finalPoint.y,finalPoint.x,finalPoint.y,this);
+            this.greenEnemy = new galaga.greenEnemyPrefab(this.game,finalPoint.x,finalPoint.y,finalPoint.x,finalPoint.y,this);
 
-                       // this.greenEnemy.path.push(spawnPoint);
-                       // this.greenEnemy.path.push(this.centerPoint);
-                        this.greenEnemy.path.push(finalPoint);
-                       // this.greenEnemy.indexX = j;
-                       // this.greenEnemy.indexY = i;
+           // this.greenEnemy.path.push(spawnPoint);
+           // this.greenEnemy.path.push(this.centerPoint);
+            this.greenEnemy.path.push(finalPoint);
+           // this.greenEnemy.indexX = j;
+           // this.greenEnemy.indexY = i;
 
-                        this.greenEnemy.enableBody = true;
-                        this.greenEnemy.vel = 20 * this.numberStage;
-                        this.Enemies.push(this.game.add.existing(this.greenEnemy));
+            this.greenEnemy.enableBody = true;
+            this.greenEnemy.vel = 20 * this.numberStage;
+            this.Enemies.push(this.game.add.existing(this.greenEnemy));
 
         }
         
@@ -333,8 +338,6 @@ galaga.gameState = {
         {
             this.playerHighScore.setText(this.score);
         }
-        
-        
     },
     
     initStars:function(){
@@ -372,7 +375,7 @@ galaga.gameState = {
     },
     
     flareStar:function(){
-        for(var i=0; i<=this.stars.length; i++)
+        for(var i=0; i<this.stars.length; i++)
         {
             if(this.stars[i].active)
             {
@@ -719,10 +722,6 @@ galaga.gameState = {
                 galaga.game.state.start('main');
             }
             
-            /*if(this.hKey.isDown){
-                this.showHighscore();
-            }*/
-            
             if(!this.endGame){
                 if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
                     this.createBullet();
@@ -730,25 +729,34 @@ galaga.gameState = {
                 }
             }
             
-            
-            
-            
 
             this.time++;
         }
     },
     
-    //*********************************************************
-    /*$.getJSON("highscore.json", function(json){
-        console.log(json);//
-        //if doesn't exist, create it
-            // JSON
-            var highscore = '{
+    showHighscore:function(){
+        this.resultText.destroy();
+        this.playerShots.destroy();
+        this.playerShotsHit.destroy();
+        this.playerShotsMissed.destroy();
+        
+        this.styleText = { font: "20px galaga", fill: "#FF0000", align: "center" };
+        
+        this.topText = this.game.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight/2, "TOP 5",this.styleText);
+        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2)-30, "SCORE      NAME",this.styleText);
+        
+        // JSON
+        var numScores = 5;
+        var currScore;
+        
+        var highscore;
+        if(localStorage.getItem(scores) == null){
+            var newHighscore = {
                 "players": [
                     {
                         "pos": "1ST",
                         "name": "AAAAAAAA",
-                        "score": "000000"
+                        "score": this.score
                     },
                     {
                         "pos": "2ND",
@@ -771,38 +779,43 @@ galaga.gameState = {
                         "score": "000000"
                     }
                 ]
-            }';
-    },*/
-    //*********************************************************
-    
-    showHighscore:function(){
-        this.resultText.destroy();
-        this.playerShots.destroy();
-        this.playerShotsHit.destroy();
-        this.playerShotsMissed.destroy();
-        
-        this.styleText = { font: "20px galaga", fill: "#FF0000", align: "center" };
-        
-        this.topText = this.game.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight/2, "TOP 5",this.styleText);
-        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2)-30, "SCORE      NAME",this.styleText);
-        
-        this.positionsText = ["1ST", "2ND", "3RD", "4TH", "5TH"];
-        var topPlayer = jsonObj['topPlayer'];
-        var name;
-        var score;
-        
-        for(var i = 0; i < this.topPlayer.length; i++){
-            name = document.createElement('name');
-            score = document.createElement('score');
+            };
             
-            name.textContent = topPlayers[i].name;
-            score.textContent = topPlayers[i].score;
-            
-            topPlayers.appendChild(name);
-            topPlayers.appendChild(score);
-            
-            section.appendChild(topPlayer);
+            highscore = newHighscore;
+            localStorage.scores = JSON.stringify(highscore);
         }
-    }    
+        else{
+            highscore = JSON.parse(localStorage.scores);
             
+            var currIndex = numScores;
+            for(var i = numScores - 1; i >= 0; i--){
+                currScore = highscore.players[i].score;
+                if(this.score < currScore){
+                    break;
+                }
+                currIndex--;
+            }
+            
+            if(currIndex < numScores && currIndex > -1){
+                highscore.players[currIndex].score = this.score;
+                localStorage.scores = JSON.stringify(highscore);
+            }
+        }
+        
+        var currPos;
+        var currName;
+        var heightText = -60;
+        var currPlayer;
+        
+        for(var i = 0; i < numScores; i++){
+            currPlayer = highscore.players[i];
+            currPos = currPlayer.pos;
+            currName = currPlayer.name;
+            currScore = currPlayer.score;
+            
+            this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos, this.styleText);
+            this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2) + heightText, currScore + "        " + currName, this.styleText);
+            heightText -= 30;
+        }
+    }
 }

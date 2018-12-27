@@ -5,7 +5,6 @@ var gameOptions={
     gameWidth:256,
     gameHeight:512, 
     playerLifes:3,
-    highScore:20000,
     speedEnemies:0.015
 };
 
