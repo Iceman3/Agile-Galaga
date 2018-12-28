@@ -13,7 +13,3 @@ galaga.game = new Phaser.Game(gameOptions.gameWidth,gameOptions.gameHeight,Phase
 galaga.game.state.add('main', galaga.gameState);
 galaga.game.state.add('mainMenu', galaga.mainMenu);
 galaga.game.state.start('mainMenu');
-
-
-
-    

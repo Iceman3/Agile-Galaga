@@ -53,10 +53,6 @@ galaga.gameState = {
         
         this.gridDistance = 16;
         this.gridDistanceMultiplier = 4;
-        
-        
-
-
     },
     
     create:function(){
@@ -93,11 +89,8 @@ galaga.gameState = {
     },
     
     initGrid:function(){
-        
-                
         this.isChangingStage = true;
 
-        
         this.initialMovement = true;
         
         this.timeToSpawnEnemy = 0.065;
@@ -116,124 +109,93 @@ galaga.gameState = {
         this.Enemies = [];       
         this.enemyBullets = this.add.group();
         
-        
-    if(this.numberStage%5 ==0){
-        //BOSS STAGE
-        
-        this.initBoss();
-        this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
-        
-        
-    }
-        
-    else{
-        
-      
-    
-        this.EnemiesGrid = [
-            'xxxGGGGxxx',
-            'RRRRRRRRRR',
-            'RRRRRRRRRR',
-            'YYYYYYYYYY',
-            'YYYYYYYYYY',            
-        ];
-            
-        
-        this.p=0;
-        for(var i = 0; i < this.EnemiesGrid.length; i++)
-        {
-            for(var j = 0; j < this.EnemiesGrid[i].length; j++)
+        if(this.numberStage%5 ==0){
+            //BOSS STAGE
+            this.initBoss();
+            this.spawnBossBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND*2 ,this.bossShoot,this);
+        }
+        else{
+            this.EnemiesGrid = [
+                'xxxGGGGxxx',
+                'RRRRRRRRRR',
+                'RRRRRRRRRR',
+                'YYYYYYYYYY',
+                'YYYYYYYYYY',            
+            ];
+
+            this.p = 0;
+            for(var i = 0; i < this.EnemiesGrid.length; i++)
             {
-                
-             var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +(this.gridDistance*j) - (this.gridDistance * 5.5) ,80+(this.gridDistance*i));
-
-                
-                switch(this.EnemiesGrid[i][j])
+                for(var j = 0; j < this.EnemiesGrid[i].length; j++)
                 {
-                    case 'Y':
-                       
-                        var spawnPoint = new Phaser.Point(this.topSpawnPoint.x,this.topSpawnPoint.y);
-                        
-                        this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
+                    var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +(this.gridDistance*j) - (this.gridDistance * 5.5) ,80+(this.gridDistance*i));
+                    switch(this.EnemiesGrid[i][j]){
+                        case 'Y':
+                            var spawnPoint = new Phaser.Point(this.topSpawnPoint.x,this.topSpawnPoint.y);
 
-                        this.yellowEnemy.path.push(spawnPoint);
-                        this.yellowEnemy.path.push(this.centerPoint);
-                        this.yellowEnemy.path.push(finalPoint);
-                        this.yellowEnemy.indexX = j;
-                        this.yellowEnemy.indexY = i;
+                            this.yellowEnemy = new galaga.yellowEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
+                            this.yellowEnemy.path.push(spawnPoint);
+                            this.yellowEnemy.path.push(this.centerPoint);
+                            this.yellowEnemy.path.push(finalPoint);
+                            this.yellowEnemy.indexX = j;
+                            this.yellowEnemy.indexY = i;
+                            this.yellowEnemy.enableBody = true;
+                            this.yellowEnemy.vel = 20 * this.numberStage;
+                            
+                            this.Enemies.push(this.game.add.existing(this.yellowEnemy));
+                            break;
 
-                        
-
-                        this.yellowEnemy.enableBody = true;
-                        this.yellowEnemy.vel = 20 * this.numberStage;
-                        this.Enemies.push(this.game.add.existing(this.yellowEnemy));
-
-                        break;
-
-                    case 'R':
-                        var spawnPoint = new Phaser.Point(0,0);
-                        
-                        if(this.p<4)
-                            {
+                        case 'R':
+                            var spawnPoint = new Phaser.Point(0,0);
+                            if(this.p<4){
                                 spawnPoint = this.leftSpawnPoint;
                             }
-                        else if(this.p>=4 && this.p <12 ){
-                            spawnPoint = this.rightSpawnPoint;
-                        }
-                        else{
-                            spawnPoint = this.topSpawnPoint;
-                        }
-                        this.redEnemy = new galaga.redEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
+                            else if(this.p>=4 && this.p <12 ){
+                                spawnPoint = this.rightSpawnPoint;
+                            }
+                            else{
+                                spawnPoint = this.topSpawnPoint;
+                            }
+                            this.redEnemy = new galaga.redEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
 
-                        this.redEnemy.path.push(spawnPoint);
-                        this.redEnemy.path.push(this.centerPoint);
-                        this.redEnemy.path.push(finalPoint);
-                        this.redEnemy.indexX = j;
-                        this.redEnemy.indexY = i;
+                            this.redEnemy.path.push(spawnPoint);
+                            this.redEnemy.path.push(this.centerPoint);
+                            this.redEnemy.path.push(finalPoint);
+                            this.redEnemy.indexX = j;
+                            this.redEnemy.indexY = i;
+                            this.redEnemy.enableBody = true;
+                            this.redEnemy.vel = 20 * this.numberStage;
+                            
+                            this.Enemies.push(this.game.add.existing(this.redEnemy));
+                            this.p++;
+                            break;
 
-                        this.redEnemy.enableBody = true;
-                        this.redEnemy.vel = 20 * this.numberStage;
-                        this.Enemies.push(this.game.add.existing(this.redEnemy));
-                        this.p++;
+                        case 'G':
+                            var spawnPoint = new Phaser.Point(this.leftSpawnPoint.x,this.leftSpawnPoint.y);
 
-                        break;
+                            this.greenEnemy = new galaga.greenEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
 
-                    case 'G':
-                        var spawnPoint = new Phaser.Point(this.leftSpawnPoint.x,this.leftSpawnPoint.y);
-
-                        this.greenEnemy = new galaga.greenEnemyPrefab(this.game,spawnPoint.x,spawnPoint.y,finalPoint.x,finalPoint.y,this);
-
-                        this.greenEnemy.path.push(spawnPoint);
-                        this.greenEnemy.path.push(this.centerPoint);
-                        this.greenEnemy.path.push(finalPoint);
-                        this.greenEnemy.indexX = j;
-                        this.greenEnemy.indexY = i;
-
-                        this.greenEnemy.enableBody = true;
-                        this.greenEnemy.vel = 20 * this.numberStage;
-                        this.Enemies.push(this.game.add.existing(this.greenEnemy));
-
-                        break;
-
-                    case 'x':
-                        
-
-                        break;
+                            this.greenEnemy.path.push(spawnPoint);
+                            this.greenEnemy.path.push(this.centerPoint);
+                            this.greenEnemy.path.push(finalPoint);
+                            this.greenEnemy.indexX = j;
+                            this.greenEnemy.indexY = i;
+                            this.greenEnemy.enableBody = true;
+                            this.greenEnemy.vel = 20 * this.numberStage;
+                            
+                            this.Enemies.push(this.game.add.existing(this.greenEnemy));
+                            break;
+                    }
                 }
             }
-        }
-     }
-     
-        
-
-       
-       this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND ,this.enemyShoot,this);
+        }       
+        this.spawnEnemyBulletsTimer = this.game.time.events.loop(Phaser.Timer.SECOND ,this.enemyShoot,this);
         
         this.gameStarted = true;
     },
     
     initHud:function(){
-        if(localStorage.getItem(scores) != null){
+        if(localStorage.getItem('scores') != null){
             highscore = JSON.parse(localStorage.scores);
             this.highScore = highscore.players[0].score;
         }
@@ -267,25 +229,19 @@ galaga.gameState = {
         this.stageinfoStarts.destroy();
         this.stageOffset = 10;
         
-        
-        
         for(var i=1; i<=this.numberStage;i++){
             this.insigniaStage = this.game.add.sprite(gameOptions.gameWidth - (i*this.stageOffset), gameOptions.gameHeight - 20,'insignia1');
         }
       
         this.lifesOffset = 24;       
-        if(this.playerLifes >= 3)
-        {
+        if(this.playerLifes >= 3){
             this.playerlife1= this.game.add.sprite(2*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
-        if(this.playerLifes >= 2)
-        {
+        if(this.playerLifes >= 2){
             this.playerlife2= this.game.add.sprite(1*this.lifesOffset-20, gameOptions.gameHeight - 28,'nave');
         }
         
-        
         this.game.add.existing(this.nave);
-        
         
         this.initGrid();
         
@@ -297,7 +253,7 @@ galaga.gameState = {
         for(var i = 0; i < this.numEnemiesAttack; i++){
             randomNumber = Math.floor(Math.random() * this.Enemies.length);
             this.indxEnemiesAttack.push(randomNumber);
-           // console.log("who: " + randomNumber);//
+            //console.log("who: " + randomNumber);//
         }
     },
     
@@ -308,45 +264,36 @@ galaga.gameState = {
         this.boss.enableBody = true;
         this.game.add.existing(this.boss);  
         
-        
-        
-         for(var i = 0; i < this.numBossEnemies; i++){
-
-
-              var finalPoint = new Phaser.Point(   Math.cos(0,01745 *i * 360/(this.numBossEnemies )) * this.bossRadius  + this.boss.body.x,Math.sin(0,01745 * i * 360/(this.numBossEnemies )) * this.bossRadius + this.boss.body.y   );
+        for(var i = 0; i < this.numBossEnemies; i++){
+            var finalPoint = new Phaser.Point(Math.cos(0,01745 *i * 360/(this.numBossEnemies )) * this.bossRadius  + this.boss.body.x,
+                                              Math.sin(0,01745 * i * 360/(this.numBossEnemies )) * this.bossRadius + this.boss.body.y);
 
             this.greenEnemy = new galaga.greenEnemyPrefab(this.game,finalPoint.x,finalPoint.y,finalPoint.x,finalPoint.y,this);
-
-           // this.greenEnemy.path.push(spawnPoint);
-           // this.greenEnemy.path.push(this.centerPoint);
+            // this.greenEnemy.path.push(spawnPoint);
+            // this.greenEnemy.path.push(this.centerPoint);
             this.greenEnemy.path.push(finalPoint);
-           // this.greenEnemy.indexX = j;
-           // this.greenEnemy.indexY = i;
-
+            // this.greenEnemy.indexX = j;
+            // this.greenEnemy.indexY = i;
             this.greenEnemy.enableBody = true;
             this.greenEnemy.vel = 20 * this.numberStage;
+            
             this.Enemies.push(this.game.add.existing(this.greenEnemy));
-
         }
-        
-        
     },
     
     updateHUD: function(){
         this.playerScore.setText(this.score); 
-        if(this.score > this.highScore)
-        {
+        if(this.score > this.highScore){
             this.playerHighScore.setText(this.score);
         }
     },
     
     initStars:function(){
         // this.stars = this.add.group();
-       
-         this.stars = [];
-         
-        for(var i=0; i<=100; i++)
-        {
+        var numStars = 100;
+        this.stars = [];
+        
+        for(var i = 0; i <= numStars; i++){
             this.isVisible = Math.floor(Math.random() * 2);
             this.active = false;
 
@@ -367,7 +314,6 @@ galaga.gameState = {
             }
 
             this.stars.push( this.game.add.existing(this.star));
-
             // this.game.add.existing(this.star);
         } 
 
@@ -375,10 +321,8 @@ galaga.gameState = {
     },
     
     flareStar:function(){
-        for(var i=0; i<this.stars.length; i++)
-        {
-            if(this.stars[i].active)
-            {
+        for(var i = 0; i < this.stars.length; i++){
+            if(this.stars[i].active){
                 this.stars[i].active = false;
                 this.stars[i].visible = false;
             }
@@ -389,8 +333,7 @@ galaga.gameState = {
         }
     },
      
-    restartPlayer:function()
-    {
+    restartPlayer:function(){
         if(this.playerLifes==3){
             this.playerlife1.destroy();
         }
@@ -415,14 +358,15 @@ galaga.gameState = {
         
         this.endGame = true;
         
+        var wTextOffset = -105;
         //--RESULTS--
         this.ResultTextStyle = { font: "20px galaga", fill: "#FF0000", align: "center" };
         this.resultText = this.game.add.text(gameOptions.gameWidth/2 -55, gameOptions.gameHeight/2 +20, " -RESULTS- ",this.ResultTextStyle);
         
         // --NUMBER HITS --
         this.PlayerResultTextStyle = { font: "20px galaga", fill: "#FFFF00", align: "center" };
-        this.playerShots = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +50, "SHOTS FIRED     " + this.shotFired,this.PlayerResultTextStyle);
-        this.playerShotsHit = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +80, "NUMBER OF HITS  " + this.numberHits,this.PlayerResultTextStyle);
+        this.playerShots = this.game.add.text(gameOptions.gameWidth/2 + wTextOffset, gameOptions.gameHeight/2 +50, "SHOTS FIRED     " + this.shotFired,this.PlayerResultTextStyle);
+        this.playerShotsHit = this.game.add.text(gameOptions.gameWidth/2 + wTextOffset, gameOptions.gameHeight/2 +80, "NUMBER OF HITS  " + this.numberHits,this.PlayerResultTextStyle);
         
         // -- HIT-MISS RATIO --
         this.PlayerResultTextStyle = { font: "20px galaga", fill: "#FFFFFF", align: "center" };
@@ -431,7 +375,7 @@ galaga.gameState = {
         {
                 this.ratio=0;
         }
-        this.playerShotsMissed = this.game.add.text(gameOptions.gameWidth/2 -90, gameOptions.gameHeight/2 +110, "HIT-MISS RATIO  " +this.ratio.toFixed(1)+" %",this.PlayerResultTextStyle);
+        this.playerShotsMissed = this.game.add.text(gameOptions.gameWidth/2 + wTextOffset, gameOptions.gameHeight/2 + 110, "HIT-MISS RATIO  " +this.ratio.toFixed(1) + " %",this.PlayerResultTextStyle);
         
         this.game.time.events.add(Phaser.Timer.SECOND * 4, this.showHighscore, this);
     },
@@ -484,7 +428,8 @@ galaga.gameState = {
              
               var rotationSpeed = this.game.time.now/1000;
             
-              var finalPoint = new Phaser.Point(   Math.cos((0,01745 * i * (360/this.numBossEnemies) ) + rotationSpeed) * this.bossRadius  + this.boss.body.x + this.boss.body.width/2.5 ,Math.sin((0,01745 * i * (360/this.numBossEnemies)) + rotationSpeed) * this.bossRadius + this.boss.body.y + this.boss.body.height/2);
+              var finalPoint = new Phaser.Point(Math.cos((0,01745 * i * (360/this.numBossEnemies) ) + rotationSpeed) * this.bossRadius  + this.boss.body.x + this.boss.body.width/2.5,
+                                                Math.sin((0,01745 * i * (360/this.numBossEnemies)) + rotationSpeed) * this.bossRadius + this.boss.body.y + this.boss.body.height/2);
   
               this.Enemies[i].body.x=finalPoint.x;
               this.Enemies[i].body.y=finalPoint.y;
@@ -492,12 +437,12 @@ galaga.gameState = {
     },
     
     updateEnemies:function(){
-        for(var i = 0; i < this.Enemies.length ; i++)
-        {
-            var offset =  Math.sin(this.game.time.now/ 1000) * this.gridDistanceMultiplier;// + this.gridDistanceMultiplier/2;
+        for(var i = 0; i < this.Enemies.length ; i++){
+            var offset =  Math.sin(this.game.time.now/ 1000) * this.gridDistanceMultiplier; // + this.gridDistanceMultiplier/2;
             //console.log(this.game.time);
             
-            var finalPoint = new Phaser.Point(gameOptions.gameWidth/2  +((this.gridDistance + offset)  * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5) ,80+(this.gridDistance*this.Enemies[i].indexY));
+            var finalPoint = new Phaser.Point(gameOptions.gameWidth/2 + ((this.gridDistance + offset) * this.Enemies[i].indexX) - ((this.gridDistance + offset) * 5.5),
+                                              80 + (this.gridDistance*this.Enemies[i].indexY));
 
             this.Enemies[i].path[this.Enemies[i].path.length -1] = finalPoint; 
             this.Enemies[i].finalPosition = finalPoint;
@@ -636,30 +581,21 @@ galaga.gameState = {
                         this.whoEnemiesAttack();
                        
                     }
-                    
-                   
                 }
-            }
-            
+            }   
         }
-   
-        
     },
     
     unPause:function(){
         this.game.paused = false;
-        this.pauseText.destroy();
-    
-                
+        this.pauseText.destroy();            
     },
     
     pauseGame:function(){
-                    this.pauseText = this.game.add.text(gameOptions.gameWidth/2-30, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
-                    this.game.paused = true; 
-                    this.pKey.onDown.add(function(){this.unPause();},this);
-                    this.game.input.disable = false;
-       
-                   
+        this.pauseText = this.game.add.text(gameOptions.gameWidth/2-30, gameOptions.gameHeight/2, 'Paused', this.scoreStyle);
+        this.game.paused = true; 
+        this.pKey.onDown.add(function(){this.unPause();},this);
+        this.game.input.disable = false;
     },
     
     update:function(){
@@ -668,7 +604,7 @@ galaga.gameState = {
         if(this.gameStarted){
             
             if(!this.isBossTime && this.Enemies.length != 0){
-                   this.updateEnemies();
+                this.updateEnemies();
             }
             else{
                 if(this.isBossTime){
@@ -682,37 +618,28 @@ galaga.gameState = {
             else if(this.cursores.left.isDown){
                 this.nave.body.x -= this.speed;
             }else{
-                this.nave.body.velocity.x =0;
+                this.nave.body.velocity.x = 0;
             }
             
-            if(this.Enemies.length <=0 && this.endGame==false && this.isBossTime == false )
-            {
-                if(this.isChangingStage)
-                    {
+            if(this.Enemies.length <=0 && this.endGame==false && this.isBossTime == false ){
+                if(this.isChangingStage){
                         this.numberStage++;
                         
-                        if(this.playerLifes >2)
-                        {
-                            
+                        if(this.playerLifes > 2){
                             this.playerlife1.destroy();
                         }
                         
-                        if(this.playerLifes >1){
-                            
+                        if(this.playerLifes > 1){                            
                             this.playerlife2.destroy();
                         }
                         
                         this.stageInfo();
-                    }
+                }
                 this.isChangingStage = false;
-
-
             }
             
             if(this.pKey.isDown && this.game.paused == false){ 
-               
                 this.pauseGame();
-               
             }
             else if(this.pKey.isDown && this.game.paused == true){
                 this.unPause();
@@ -725,11 +652,10 @@ galaga.gameState = {
             if(!this.endGame){
                 if(this.nave.canShoot && (this.space.isDown && this.space.downDuration(1))){
                     this.createBullet();
-                    this.shotFired ++;
+                    this.shotFired++;
                 }
             }
             
-
             this.time++;
         }
     },
@@ -741,42 +667,43 @@ galaga.gameState = {
         this.playerShotsMissed.destroy();
         
         this.styleText = { font: "20px galaga", fill: "#FF0000", align: "center" };
+        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 25, gameOptions.gameHeight/2 - 200, "TOP 5", this.styleText);
         
-        this.topText = this.game.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight/2, "TOP 5",this.styleText);
-        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2)-30, "SCORE      NAME",this.styleText);
+        this.styleText = { font: "18px galaga", fill: "#FF0000", align: "center" };
+        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2) - 60, (gameOptions.gameHeight/2) - 170, "SCORE   NAME",this.styleText);
         
         // JSON
         var numScores = 5;
         var currScore;
         
         var highscore;
-        if(localStorage.getItem(scores) == null){
+        if(localStorage.getItem('scores') == null){
             var newHighscore = {
                 "players": [
                     {
                         "pos": "1ST",
                         "name": "AAAAAAAA",
-                        "score": this.score
+                        "score": this.score.toString()
                     },
                     {
                         "pos": "2ND",
                         "name": "BBBBBBBB",
-                        "score": "000000"
+                        "score": 0
                     },
                     {
                         "pos": "3RD",
                         "name": "CCCCCCCC",
-                        "score": "000000"
+                        "score": 0
                     },
                     {
                         "pos": "4TH",
                         "name": "DDDDDDDD",
-                        "score": "000000"
+                        "score": 0
                     },
                     {
                         "pos": "5TH",
                         "name": "EEEEEEEE",
-                        "score": "000000"
+                        "score": 0
                     }
                 ]
             };
@@ -786,36 +713,48 @@ galaga.gameState = {
         }
         else{
             highscore = JSON.parse(localStorage.scores);
-            
-            var currIndex = numScores;
             for(var i = numScores - 1; i >= 0; i--){
                 currScore = highscore.players[i].score;
-                if(this.score < currScore){
+                if(this.score <= currScore){
                     break;
                 }
-                currIndex--;
+                
+                if(i < numScores - 1){
+                    highscore.players[i + 1].score = currScore;
+                }
+                highscore.players[i].score = this.score;
             }
             
-            if(currIndex < numScores && currIndex > -1){
-                highscore.players[currIndex].score = this.score;
-                localStorage.scores = JSON.stringify(highscore);
-            }
+            localStorage.scores = JSON.stringify(highscore);
         }
         
         var currPos;
         var currName;
-        var heightText = -60;
+        var heightText = -140;
         var currPlayer;
+        this.styleText = { font: "15px galaga", fill: "#FF0000", align: "center" };
         
-        for(var i = 0; i < numScores; i++){
+        for(var i = 0 ; i < numScores; i++){
             currPlayer = highscore.players[i];
             currPos = currPlayer.pos;
             currName = currPlayer.name;
             currScore = currPlayer.score;
             
-            this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos, this.styleText);
-            this.game.add.text((gameOptions.gameWidth/2)-300, (gameOptions.gameHeight/2) + heightText, currScore + "        " + currName, this.styleText);
-            heightText -= 30;
+            if(currScore != 0){
+                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "  " + currScore, this.styleText);
+            }
+            else{
+                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "  000000", this.styleText);
+            }
+            this.game.add.text((gameOptions.gameWidth/2) + 10, (gameOptions.gameHeight/2) + heightText, currName, this.styleText);
+            
+            heightText += 30;
         }
+        
+        this.game.time.events.add(Phaser.Timer.SECOND * 6, this.returnMainMenu, this);
+    },
+    
+    returnMainMenu:function(){
+        galaga.game.state.start('mainMenu');
     }
 }
