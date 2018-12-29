@@ -11,7 +11,6 @@ galaga.mainMenu = {
         this.game.load.audio('sndStart', 'assets/sounds/snd_start.wav');
     },
     
-    
     create:function(){
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.initStars();

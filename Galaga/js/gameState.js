@@ -199,6 +199,9 @@ galaga.gameState = {
             highscore = JSON.parse(localStorage.scores);
             this.highScore = highscore.players[0].score;
         }
+        else{
+            this.highScore = 0;
+        }
         
         this.infoStyle = { font: "15px galaga", fill: "#00FFFF"};
         this.topStyle = { font: "18px galaga", fill: "#FF0000", align: "center" };
@@ -666,11 +669,16 @@ galaga.gameState = {
         this.playerShotsHit.destroy();
         this.playerShotsMissed.destroy();
         
-        this.styleText = { font: "20px galaga", fill: "#FF0000", align: "center" };
-        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 25, gameOptions.gameHeight/2 - 200, "TOP 5", this.styleText);
+        this.styleText = { font: "20px galaga", fill: "#00ffff", align: "center" };
         
-        this.styleText = { font: "18px galaga", fill: "#FF0000", align: "center" };
-        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2) - 60, (gameOptions.gameHeight/2) - 170, "SCORE   NAME",this.styleText);
+        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2) - 25, (gameOptions.gameHeight/2) - 150, "SCORE",this.styleText);
+        this.topText = this.game.add.text((gameOptions.gameWidth/2) - 25, (gameOptions.gameHeight/2) - 130, this.score.toString(), this.styleText);
+        
+        this.styleText.fill = "#FF0000";
+        this.topText = this.game.add.text(gameOptions.gameWidth/2 - 25, gameOptions.gameHeight/2 - 20, "TOP 5", this.styleText);
+        
+        this.styleText.fill = "#00ffff";
+        this.categoriesText = this.game.add.text((gameOptions.gameWidth/2) - 40, (gameOptions.gameHeight/2), "SCORE    NAME",this.styleText);
         
         // JSON
         var numScores = 5;
@@ -682,27 +690,27 @@ galaga.gameState = {
                 "players": [
                     {
                         "pos": "1ST",
-                        "name": "AAAAAAAA",
+                        "name": "A.A",
                         "score": this.score.toString()
                     },
                     {
                         "pos": "2ND",
-                        "name": "BBBBBBBB",
+                        "name": "B.B",
                         "score": 0
                     },
                     {
                         "pos": "3RD",
-                        "name": "CCCCCCCC",
+                        "name": "C.C",
                         "score": 0
                     },
                     {
                         "pos": "4TH",
-                        "name": "DDDDDDDD",
+                        "name": "D.D",
                         "score": 0
                     },
                     {
                         "pos": "5TH",
-                        "name": "EEEEEEEE",
+                        "name": "E.E",
                         "score": 0
                     }
                 ]
@@ -730,9 +738,8 @@ galaga.gameState = {
         
         var currPos;
         var currName;
-        var heightText = -140;
+        var heightText = 22;
         var currPlayer;
-        this.styleText = { font: "15px galaga", fill: "#FF0000", align: "center" };
         
         for(var i = 0 ; i < numScores; i++){
             currPlayer = highscore.players[i];
@@ -740,15 +747,22 @@ galaga.gameState = {
             currName = currPlayer.name;
             currScore = currPlayer.score;
             
-            if(currScore != 0){
-                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "  " + currScore, this.styleText);
+            if(currScore == this.score){
+                this.styleText.fill = "#eef015";
             }
             else{
-                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "  000000", this.styleText);
+                this.styleText.fill = "#00ffff";
             }
-            this.game.add.text((gameOptions.gameWidth/2) + 10, (gameOptions.gameHeight/2) + heightText, currName, this.styleText);
             
-            heightText += 30;
+            if(currScore != 0){
+                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "   " + currScore, this.styleText);
+            }
+            else{
+                this.game.add.text((gameOptions.gameWidth/2)-100, (gameOptions.gameHeight/2) + heightText, currPos + "   00000", this.styleText);
+            }
+            this.game.add.text((gameOptions.gameWidth/2)+55, (gameOptions.gameHeight/2) + heightText, currName, this.styleText);
+            
+            heightText += 22;
         }
         
         this.game.time.events.add(Phaser.Timer.SECOND * 6, this.returnMainMenu, this);
