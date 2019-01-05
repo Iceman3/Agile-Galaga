@@ -75,7 +75,14 @@ galaga.mainMenu = {
         this.playerText = this.game.add.text(20,0, "1UP", this.topStyle);
         
         this.topText = this.game.add.text(gameOptions.gameWidth/2 - 30,0, "HIGH SCORE", this.topStyle); 
-        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-5,15, gameOptions.highScore, this.scoreStyle); 
+         if(localStorage.getItem('scores') != null){
+            highscore = JSON.parse(localStorage.scores);
+            this.highScore = highscore.players[0].score;
+        }
+        else{
+            this.highScore = 100000;
+        }
+        this.playerHighScore = this.game.add.text(gameOptions.gameWidth/2-5,15, this.highScore, this.scoreStyle); 
         
         this.startInfo = this.game.add.text(gameOptions.gameWidth/2 -75,gameOptions.gameHeight/2 -60, "PUSH START BUTTON", this.infoStyle);
         this.lifesBonus1 = this.game.add.text(gameOptions.gameWidth/2 -95,gameOptions.gameHeight/2 , "1ST BONUS FOR 30000 PTS", this.lifeStyle);

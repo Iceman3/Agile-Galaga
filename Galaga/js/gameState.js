@@ -27,6 +27,7 @@ galaga.gameState = {
         this.game.load.audio('sndEnemy2Death', 'assets/sounds/snd_enemy2_death.wav');
         this.game.load.audio('sndPlayerShoot', 'assets/sounds/snd_player_shoot.wav');
         this.game.load.audio('sndPlayerDeath', 'assets/sounds/snd_player_death.wav');
+        this.game.load.audio('sndRankingTheme', 'assets/sounds/snd_ranking_theme.mp3')
         
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -75,6 +76,7 @@ galaga.gameState = {
         this.sndEnemy2Death = this.game.add.audio('sndEnemy2Death');
         this.sndPlayerShoot = this.game.add.audio('sndPlayerShoot');
         this.sndPlayerDeath = this.game.add.audio('sndPlayerDeath');
+        this.sndRankingTheme = this.game.add.audio('sndRankingTheme');
         
         this.initStars();
         this.sndStageIntro.play();
@@ -668,6 +670,7 @@ galaga.gameState = {
         this.playerShots.destroy();
         this.playerShotsHit.destroy();
         this.playerShotsMissed.destroy();
+        this.sndRankingTheme.play();
         
         this.styleText = { font: "20px galaga", fill: "#00ffff", align: "center" };
         
@@ -765,7 +768,7 @@ galaga.gameState = {
             heightText += 22;
         }
         
-        this.game.time.events.add(Phaser.Timer.SECOND * 6, this.returnMainMenu, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 28, this.returnMainMenu, this);
     },
     
     returnMainMenu:function(){
